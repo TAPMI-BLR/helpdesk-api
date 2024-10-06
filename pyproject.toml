@@ -21,6 +21,13 @@ black = "^24.8.0"
 pre-commit = "^3.8.0"
 python-dotenv = "^1.0.0"
 
+[tool.taskipy.tasks]
+server = { cmd = "python -m api.server", help = "Runs the API Server"}
+lint = { cmd = "pre-commit run", help = "Lints project" }
+lintall = { cmd = "pre-commit run --all-files", help = "Lints project" }
+precommit = { cmd = "pre-commit install", help = "Installs the pre-commit git hook" }
+format = { cmd = "black api", help = "Runs the black python formatter" }
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
