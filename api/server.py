@@ -24,7 +24,7 @@ config.update({"IS_PROD": is_prod.lower() == "true"})
 config.update(
     {
         "DB_HOST": config.get("DB_HOST", "localhost"),
-        "DB_PORT": int(config.get("DB_PORT", 3306)),
+        "DB_PORT": int(config.get("DB_PORT", 5432)),
         "DB_USERNAME": config.get("DB_USERNAME", "root"),
         "DB_PASSWORD": config.get("DB_PASSWORD", "password"),
         "DB_NAME": config.get("DB_NAME", "helpdesk"),
@@ -43,6 +43,7 @@ if (
 app: HelpDesk = appserver
 app.config.update(config)
 app.config.PROXIES_COUNT = int(config.get("PROXIES_COUNT", 0))
+
 
 if __name__ == "__main__":
     # Run the API Server
