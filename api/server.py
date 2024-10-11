@@ -1,8 +1,8 @@
-from api.app import appserver
-from api.app import HelpDesk
-
 from dotenv import dotenv_values
 from sanic.log import logger
+
+from api.app import HelpDesk, appserver
+from . import endpoints  # noqa: F401
 
 logger.debug("Loading ENV")
 config = dotenv_values(".env")
@@ -43,6 +43,12 @@ if (
 app: HelpDesk = appserver
 app.config.update(config)
 app.config.PROXIES_COUNT = int(config.get("PROXIES_COUNT", 0))
+
+
+@app.listener("before_server_start")
+async def setup_app(app: HelpDesk):
+    await app.load_entra_jwks()
+    logger.info("Setup complete.")
 
 
 if __name__ == "__main__":
