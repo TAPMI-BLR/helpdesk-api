@@ -1,7 +1,13 @@
 from dotenv import dotenv_values
+from mayim.extension import SanicMayimExtension
 from sanic.log import logger
+from sanic_ext import Extend
 
 from api.app import HelpDesk, appserver
+from api.mayim.ticket_executor import TicketExecutor
+from api.mayim.user_executor import UserExecutor
+from api.mayim.message_executor import MessageExecutor
+
 from . import endpoints  # noqa: F401
 
 logger.debug("Loading ENV")
@@ -44,6 +50,13 @@ app: HelpDesk = appserver
 app.config.update(config)
 app.config.PROXIES_COUNT = int(config.get("PROXIES_COUNT", 0))
 
+Extend.register(
+    SanicMayimExtension(
+        executors=[TicketExecutor, UserExecutor, MessageExecutor],
+        dsn=f"postgres://{config['DB_USERNAME']}:{config['DB_PASSWORD']}@{config['DB_HOST']}:{config['DB_PORT']}/{config['DB_NAME']}",  # noqa: E501
+    )
+)
+
 
 @app.listener("before_server_start")
 async def setup_app(app: HelpDesk):
@@ -52,5 +65,10 @@ async def setup_app(app: HelpDesk):
 
 
 if __name__ == "__main__":
+    # Use a KWARGS dict to pass to app.run dynamically
+    kwargs = {"access_log": True, "host": "0.0.0.0"}
+
+    kwargs["debug"] = not app.config["IS_PROD"]
+    kwargs["auto_reload"] = True
     # Run the API Server
-    app.run()
+    app.run(**kwargs)
