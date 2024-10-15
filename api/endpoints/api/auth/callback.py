@@ -1,7 +1,8 @@
 from sanic.views import HTTPMethodView
-
-from api.app import HelpDesk
+from sanic import Request, json
 
 
 class AuthCallback(HTTPMethodView):
-    ...
+    # TODO
+    async def get(self, request: Request):
+        return json({"error": "Not implemented"}, status=501)
