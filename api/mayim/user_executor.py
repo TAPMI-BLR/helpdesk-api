@@ -1,18 +1,17 @@
 from mayim import PostgresExecutor
 
+from api.models.db.user import User
+
 
 class UserExecutor(PostgresExecutor):
     generic_prefix = ""
     path = "./queries/users/"
 
-    async def get_user_by_id(self, user_id: int):
+    async def get_user_by_id(self, user_id: int) -> User:
         """Get a user by their ID"""
 
-    async def get_user_by_email(self, email: str):
+    async def get_user_by_email(self, email: str) -> User:
         """Get a user by their email"""
 
-    async def get_user_tickets(self, user_id: int):
-        """Get all tickets for a user"""
-
-    async def check_user_is_team_member(self, user_id: int):
-        """Check if a user is a team member"""
+    async def create_user(self, name: str, email: str, data: dict) -> User:
+        """Create a user"""
