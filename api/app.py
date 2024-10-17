@@ -88,16 +88,7 @@ class HelpDesk(Sanic):
         """Generates JWT with given data"""
         now = datetime.now(timezone.utc)
         expire = now + timedelta(minutes=validity)
-
-        try:
-            # Attempt to get Host from config
-            host = self.config["HOST"]
-        except KeyError:
-            logger.error("Host not found in configw")
-            # Unable to get Host from config, Quit app due to required field
-            self.stop()
-
-        iss = f"NSS_API_{host}"
+        iss = f"HELPDESK_API_{self.config['HOST']}"
         data.update({"exp": expire, "iat": now, "nbf": now, "iss": iss})
         return jwt.encode(data, self.config["PRIV_KEY"], algorithm="RS256")
 

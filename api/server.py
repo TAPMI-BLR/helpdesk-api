@@ -34,6 +34,7 @@ config.update(
         "DB_USERNAME": config.get("DB_USERNAME", "root"),
         "DB_PASSWORD": config.get("DB_PASSWORD", "password"),
         "DB_NAME": config.get("DB_NAME", "helpdesk"),
+        "HOST": config.get("HOST", "DEMO"),
     },
 )
 
@@ -52,7 +53,7 @@ app.config.PROXIES_COUNT = int(config.get("PROXIES_COUNT", 0))
 
 Extend.register(
     SanicMayimExtension(
-        executors=[TicketExecutor, UserExecutor, MessageExecutor],
+        executors=[UserExecutor, MessageExecutor, TicketExecutor],
         dsn=f"postgres://{config['DB_USERNAME']}:{config['DB_PASSWORD']}@{config['DB_HOST']}:{config['DB_PORT']}/{config['DB_NAME']}",  # noqa: E501
     )
 )
