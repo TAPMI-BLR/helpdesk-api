@@ -2,12 +2,13 @@ from datetime import datetime
 
 
 class JWT_Data:
-    def __init__(self, name, email, roles, exp, iat, nbf, iss) -> None:
+    def __init__(self, name, email, uuid, roles, exp, iat, nbf, iss) -> None:
         # Make sure none of the values are None
-        if None in (name, email, roles, exp, iat, nbf, iss):
+        if None in (name, email, uuid, roles, exp, iat, nbf, iss):
             raise ValueError("All values must be provided")
         self.name = name
         self.email = email
+        self.uuid = uuid
         self.roles = roles
         self.exp = datetime.fromtimestamp(exp)
         self.iat = datetime.fromtimestamp(iat)
