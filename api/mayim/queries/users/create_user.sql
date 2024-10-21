@@ -1,1 +1,2 @@
--- TODO: Implement this query
+INSERT INTO "users" ("data", "email", "name")
+VALUES ($data, $email, $name)
