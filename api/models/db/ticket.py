@@ -7,6 +7,7 @@ from api.models.enums import TicketResolution, TicketStatus
 @dataclass(frozen=True)
 class Ticket:
     id: int
+    title: str
     user_id: int
     subcategory_id: int
     assignee_id: int
@@ -20,6 +21,7 @@ class Ticket:
     def to_dict(self):
         return {
             "id": self.id,
+            "title": self.title,
             "user_id": self.user_id,
             "subcategory_id": self.subcategory_id,
             "assignee_id": self.assignee_id,
