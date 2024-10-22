@@ -1,1 +1,2 @@
--- TODO: Implement this query
+INSERT INTO categories ('name')
+VALUES ($name);

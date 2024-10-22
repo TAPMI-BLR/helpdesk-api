@@ -1,1 +1,2 @@
--- TODO: Implement this query
+SELECT *
+FROM categories;

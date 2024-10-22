@@ -1,1 +1,2 @@
--- TODO: Implement this query
+INSERT INTO subcategories ('category_id', 'name')
+VALUES ($parent_id, $name);
