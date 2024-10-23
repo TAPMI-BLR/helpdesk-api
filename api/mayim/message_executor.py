@@ -16,10 +16,10 @@ class MessageExecutor(PostgresExecutor):
 
     async def create_text_message(
         self, ticket_id: int, user_id: int, message: str, message_type: MessageType
-    ) -> Message:
+    ):
         """Create a new chat message"""
 
     async def create_message_with_file_id(
         self, ticket_id: int, user_id: int, file_id: int
-    ) -> Message:
+    ):
         """Create a message with a file attachment"""

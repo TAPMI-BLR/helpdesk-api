@@ -4,9 +4,11 @@ from sanic.log import logger
 from sanic_ext import Extend
 
 from api.app import HelpDesk, appserver
+from api.mayim.category_executor import CategoryExecutor
+from api.mayim.message_executor import MessageExecutor
+from api.mayim.system_executor import SystemExecutor
 from api.mayim.ticket_executor import TicketExecutor
 from api.mayim.user_executor import UserExecutor
-from api.mayim.message_executor import MessageExecutor
 
 from . import endpoints  # noqa: F401
 
@@ -53,7 +55,13 @@ app.config.PROXIES_COUNT = int(config.get("PROXIES_COUNT", 0))
 
 Extend.register(
     SanicMayimExtension(
-        executors=[UserExecutor, MessageExecutor, TicketExecutor],
+        executors=[
+            UserExecutor,
+            MessageExecutor,
+            TicketExecutor,
+            CategoryExecutor,
+            SystemExecutor,
+        ],
         dsn=f"postgres://{config['DB_USERNAME']}:{config['DB_PASSWORD']}@{config['DB_HOST']}:{config['DB_PORT']}/{config['DB_NAME']}",  # noqa: E501
     )
 )

@@ -11,12 +11,12 @@ class Ticket:
     user_id: int
     subcategory_id: int
     assignee_id: int
-    severity: str
-    sla: str
+    severity_id: int
+    sla_id: int
     created_at: datetime
     closed_at: datetime | None
-    is_resolved: TicketResolution
-    is_closed: TicketStatus
+    resolution_status: TicketResolution
+    ticket_status: TicketStatus
 
     def to_dict(self):
         return {
@@ -25,10 +25,10 @@ class Ticket:
             "user_id": self.user_id,
             "subcategory_id": self.subcategory_id,
             "assignee_id": self.assignee_id,
-            "severity": self.severity,
-            "sla": self.sla,
+            "severity": self.severity_id,
+            "sla": self.sla_id,
             "created_at": str(self.created_at),
             "closed_at": str(self.closed_at) if self.closed_at else None,
-            "is_resolved": self.is_resolved,
-            "is_closed": self.is_closed,
+            "resolution_status": self.resolution_status,
+            "ticket_status": self.ticket_status,
         }
