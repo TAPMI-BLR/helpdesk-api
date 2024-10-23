@@ -1,1 +1,4 @@
--- TODO: Implement this query
+SELECT *
+FROM config
+ORDER BY created_at DESC
+LIMIT 1;
