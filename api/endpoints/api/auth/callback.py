@@ -113,7 +113,7 @@ class AuthCallback(HTTPMethodView):
             payload = {
                 "name": user.name,
                 "email": user.email,
-                "uuid": user.email,
+                "uuid": user.id,
                 "roles": ["user"],
             }
             if user.is_team:
