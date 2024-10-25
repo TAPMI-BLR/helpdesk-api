@@ -1,0 +1,7 @@
+FROM python:3.11-slim
+
+# Install basic system dependencies
+RUN apt-get update && apt-get install -y --fix-missing gcc mono-mcs make
+
+# Install Poetry
+RUN pip install poetry
