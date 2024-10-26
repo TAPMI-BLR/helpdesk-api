@@ -9,5 +9,5 @@ class TicketMessages(HTTPMethodView):
     # TODO
     @require_login()
     @require_role(required_role="user", allow_higher=True)
-    async def get(self, request: Request, jwt_data: JWT_Data):
+    async def get(self, request: Request, jwt_data: JWT_Data, ticket_id: int):
         return json({"error": "Not implemented"}, status=501)

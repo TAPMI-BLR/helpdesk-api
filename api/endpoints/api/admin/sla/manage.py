@@ -9,5 +9,5 @@ class SLAManage(HTTPMethodView):
     # TODO
     @require_login()
     @require_role(required_role="sys_admin", allow_higher=True)
-    async def get(self, request: Request, jwt_data: JWT_Data, id: str):
+    async def get(self, request: Request, jwt_data: JWT_Data, sla_id: int):
         return json({"error": "Not implemented"}, status=501)
