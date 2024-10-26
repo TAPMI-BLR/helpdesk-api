@@ -18,16 +18,16 @@ class MeCreate(HTTPMethodView):
     @validate(form=TicketForm)
     @require_login()
     @require_role(required_role="user", allow_higher=True)
-    async def post(self, request: Request, jwt_data: JWT_Data):
+    async def post(self, request: Request, jwt_data: JWT_Data, form: TicketForm):
         # Get Ticket and Message Executors
         ticket_executor = Mayim.get(TicketExecutor)
         message_executor = Mayim.get(MessageExecutor)
         system_executor = Mayim.get(SystemExecutor)
 
         # Get the data from the request
-        subcategory_id = request.form.get("subcategory_id")
-        inital_msg = request.form.get("inital_message")
-        title = request.form.get("title")
+        subcategory_id = form.subcategory_id
+        inital_msg = form.subcategory_id
+        title = form.title
 
         # Ensure Data is not Empty
         if not subcategory_id:

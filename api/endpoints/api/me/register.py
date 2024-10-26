@@ -10,21 +10,16 @@ from api.decorators.require_role import require_role
 from api.decorators.require_login import require_login
 from api.mayim.user_executor import UserExecutor
 from api.models.internal.jwt_data import JWT_Data
-
-
-class RegisterForm:
-    name: str
-    email: str
-    data: dict
+from api.models.requests.register_form import RegisterForm
 
 
 class MeRegister(HTTPMethodView):
     @validate(form=RegisterForm)
     @require_login()
     @require_role(required_role="signup")
-    async def post(self, request: Request, jwt_data: JWT_Data):
+    async def post(self, request: Request, jwt_data: JWT_Data, form: RegisterForm):
         # Get the data from the request
-        name = request.form.get("name")
+        name = form.name
         email = request.form.get("email")
         data = request.form.get("data")
         # Compare the provided name and email with the JWT data
