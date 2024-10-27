@@ -26,7 +26,7 @@ class JWT_Data:
         return "admin" in self.roles
 
     def is_support(self) -> bool:
-        return "support" in self.roles
+        return "team" in self.roles
 
     def is_valid(self) -> bool:
         now = datetime.now()
