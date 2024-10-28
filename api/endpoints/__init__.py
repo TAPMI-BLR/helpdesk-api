@@ -9,6 +9,9 @@ from .api.auth.entra import AuthEntra
 from .api.me.create import MeCreate
 from .api.me.register import MeRegister
 from .api.me.root import MeRoot
+from .api.options.category import CategoryOptions
+from .api.options.severity import SeverityOptions
+from .api.options.sla import SLAOptions
 from .api.ping import Ping
 from .api.tickets.root import TicketRoot
 from .api.tickets.messages import TicketMessages
@@ -29,6 +32,9 @@ appserver.add_route(AuthEntra.as_view(), "/api/auth/entra")
 appserver.add_route(MeCreate.as_view(), "/api/me/create")
 appserver.add_route(MeRegister.as_view(), "/api/me/register")
 appserver.add_route(MeRoot.as_view(), "/api/me")
+appserver.add_route(CategoryOptions.as_view(), "/api/options/category")
+appserver.add_route(SeverityOptions.as_view(), "/api/options/severity")
+appserver.add_route(SLAOptions.as_view(), "/api/options/sla")
 appserver.add_route(Ping.as_view(), "/api/ping")
 appserver.add_route(TicketRoot.as_view(), "/api/tickets")
 appserver.add_route(TicketMessages.as_view(), "/api/tickets/<ticket_id:int>/messages")
