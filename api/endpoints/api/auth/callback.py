@@ -1,6 +1,5 @@
 from sanic.views import HTTPMethodView
-from sanic import Request
-from sanic.response import json
+from sanic import Request, redirect
 from sanic.log import logger
 import jwt
 
@@ -37,53 +36,23 @@ class AuthCallback(HTTPMethodView):
         except jwt.exceptions.InvalidAudienceError:
             logger.warning("Invalid audience for JWT")
             # Invalid token
-            return json(
-                {
-                    "authenticated": False,
-                    "message": "Invalid token",
-                },
-                status=401,
-            )
+            return redirect("/?error=invalid_token")
         except jwt.exceptions.InvalidIssuedAtError:
             logger.warning("JWT issued in future")
             # Invalid token
-            return json(
-                {
-                    "authenticated": False,
-                    "message": "Invalid token",
-                },
-                status=401,
-            )
+            return redirect("/?error=invalid_token")
         except jwt.exceptions.ImmatureSignatureError:
             logger.warning("JWT issued in future")
             # Invalid token
-            return json(
-                {
-                    "authenticated": False,
-                    "message": "Invalid token",
-                },
-                status=401,
-            )
+            return redirect("/?error=invalid_token")
         except jwt.exceptions.ExpiredSignatureError:
             logger.warning("JWT has expired")
             # Invalid token
-            return json(
-                {
-                    "authenticated": False,
-                    "message": "Invalid token",
-                },
-                status=401,
-            )
+            return redirect("/?error=invalid_token")
         except jwt.exceptions.DecodeError:
             logger.warning("JWT decode error")
             # Invalid token
-            return json(
-                {
-                    "authenticated": False,
-                    "message": "Invalid token",
-                },
-                status=401,
-            )
+            return redirect("/?error=invalid_token")
 
         # Get email from decoded token
         email = decoded["email"]
@@ -95,21 +64,15 @@ class AuthCallback(HTTPMethodView):
         # Hard domain check for email domain being "manipal.edu" or a subdomain
         if not domain.endswith("manipal.edu"):
             # Invalid domain
-            return json(
-                {
-                    "authenticated": False,
-                    "message": "Invalid domain",
-                },
-                status=401,
-            )
+            return redirect(f"/?error=invalid_domain&domain={domain}")
         # Get user from database
         try:
             user = await executor.get_user_by_email(email)
         except RecordNotFound:
             user = None
 
+        duration = 30 * 24 * 60
         if user:
-            message = "Authenticated"
             payload = {
                 "name": user.name,
                 "email": user.email,
@@ -120,27 +83,19 @@ class AuthCallback(HTTPMethodView):
                 payload["roles"].append("team")
             if user.is_sys_admin:
                 payload["roles"].append("sys_admin")
-
-            issued_token = await app.generate_jwt(payload, validity=30 * 24 * 60)
-
-            return json(
-                {
-                    "authenticated": True,
-                    "message": message,
-                    "token": issued_token,
-                },
-                status=200,
-            )
+            issued_token = await app.generate_jwt(payload, validity=duration)
         else:
-            message = "Signup Required"
             payload = {"email": email, "name": name, "roles": ["signup"]}
-            issued_token = await app.generate_jwt(payload, validity=30 * 24 * 60)
+            duration = 12 * 60
+            issued_token = await app.generate_jwt(payload, validity=duration)
 
-        return json(
-            {
-                "authenticated": False,
-                "message": message,
-                "token": issued_token,
-            },
-            status=200,
-        )
+        # Redirect to home with JWT set in cookie
+        rsp = redirect("/")
+        # Cookie will expire 1 minute before the token expires
+        max_age = duration * 60
+        max_age -= 60
+        # Add Cookie
+        rsp.add_cookie("JWT_TOKEN", issued_token, max_age=max_age)
+
+        # Redirect to home
+        return rsp
