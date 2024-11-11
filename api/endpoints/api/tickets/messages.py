@@ -1,14 +1,17 @@
 from mayim import Mayim
-from sanic import Request, json
-from sanic.views import HTTPMethodView
-from api.decorators.require_role import require_role
-from api.decorators.require_login import require_login
-from api.mayim.message_executor import MessageExecutor
-from api.mayim.ticket_executor import TicketExecutor
-from api.models.internal.jwt_data import JWT_Data
 from mayim.exception import RecordNotFound
+from sanic import Request, json
+from sanic.log import logger
+from sanic.views import HTTPMethodView
 from sanic_ext import validate
 
+from api.decorators.require_login import require_login
+from api.decorators.require_role import require_role
+from api.mayim.message_executor import MessageExecutor
+from api.mayim.ticket_executor import TicketExecutor
+from api.models.enums import MessageType
+from api.models.internal.jwt_data import JWT_Data
+from api.models.requests.message_form import MessageForm
 from api.models.requests.message_query_params import MessageQueryParams
 
 
@@ -76,3 +79,49 @@ class TicketMessages(HTTPMethodView):
 
         else:
             return json({"error": "Unauthorized"}, 403)
+
+    @validate(form=MessageForm)
+    @require_login()
+    @require_role(required_role="user", allow_higher=True)
+    async def post(
+        self, request: Request, jwt_data: JWT_Data, ticket_id: int, form: MessageForm
+    ):
+        # Get executors
+        ticket_executor = Mayim.get(TicketExecutor)
+        message_executor = Mayim.get(MessageExecutor)
+
+        # Get Ticket by ID
+        try:
+            ticket = await ticket_executor.get_ticket_by_id(ticket_id)
+        except RecordNotFound:
+            return json({"status": "failure", "error": "Ticket not found"}, 404)
+
+        # Check if user is allowed to post a message and set message type
+        if ticket.user_id == jwt_data.uuid:
+            message_type = MessageType.USER
+        elif jwt_data.is_admin() or jwt_data.is_support():
+            message_type = MessageType.SUPPORT
+        else:
+            return json({"status": "failure", "error": "Unauthorized"}, 403)
+
+        # Get message data
+        message = form.content
+        file = form.file
+
+        # Create message
+        if file:
+            return json(
+                {"status": "failure", "error": "File uploads are not supported yet"},
+                501,
+            )
+        else:
+            try:
+                await message_executor.create_text_message(
+                    ticket_id, jwt_data.uuid, message, message_type
+                )
+            except RecordNotFound:
+                return json({"status": "failure", "error": "Ticket not found"}, 404)
+            except Exception as e:
+                logger.error(e)
+                return json({"status": "failure", "error": "An error occurred"}, 500)
+        return json({"status": "success"}, 200)
