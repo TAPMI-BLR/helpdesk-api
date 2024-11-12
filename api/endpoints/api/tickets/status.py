@@ -28,3 +28,35 @@ class TicketStatus(HTTPMethodView):
         return json(
             {"error": "You do not have permission to view this ticket"}, status=403
         )
+
+    @require_login()
+    @require_role(required_role="user", allow_higher=True)
+    # TODO - Validate via class
+    async def post(self, request: Request, jwt_data: JWT_Data, ticket_id: int):
+        executor = Mayim.get(TicketExecutor)
+        try:
+            ticket = await executor.get_ticket_by_id(ticket_id)
+        except RecordNotFound:
+            return json({"error": "Ticket not found"}, status=404)
+        if (
+            ticket.user_id == jwt_data.uuid
+            or jwt_data.is_support()
+            or jwt_data.is_admin()
+        ):
+            status = request.json.get("status")
+            resolution = request.json.get("resolution")
+            if status:
+                await executor.update_ticket_status(ticket_id, status)
+            elif resolution:
+                await executor.update_ticket_resolution(ticket_id, resolution)
+            else:
+                return json(
+                    {"error": "You must provide a status or resolution to be updated"},
+                    status=400,
+                )
+
+            return json({"status": "success"})
+
+        return json(
+            {"error": "You do not have permission to update this ticket"}, status=403
+        )

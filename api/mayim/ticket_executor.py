@@ -2,6 +2,7 @@ from mayim import PostgresExecutor
 
 from api.models.db.config import Config
 from api.models.db.ticket import Ticket
+from api.models.enums import TicketResolution, TicketStatus
 
 
 class TicketExecutor(PostgresExecutor):
@@ -37,5 +38,12 @@ class TicketExecutor(PostgresExecutor):
         )
         return self.hydrator.hydrate(r, Ticket)
 
-    async def update_ticket_resolution(self, ticket_id: int, resolution: str) -> Ticket:
+    async def update_ticket_resolution(
+        self, ticket_id: int, resolution: TicketResolution, name_of_updater: str
+    ) -> Ticket:
         """Update a ticket's resolution"""
+
+    async def update_ticket_status(
+        self, ticket_id: int, status: TicketStatus, name_of_updater: str
+    ) -> Ticket:
+        """Update a ticket's status"""
