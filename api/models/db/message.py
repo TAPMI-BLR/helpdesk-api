@@ -1,26 +1,27 @@
 from dataclasses import dataclass
 from datetime import datetime
+from uuid import UUID
 
 from api.models.enums import MessageType
 
 
 @dataclass(frozen=True)
 class Message:
-    id: int
+    id: UUID
     type: MessageType
-    ticket_id: int
-    author_id: int
+    ticket_id: UUID
+    author_id: UUID
     created_at: datetime
     content: str | None
-    file_id: int | None
+    file_id: UUID | None
 
     def to_dict(self):
         return {
-            "id": self.id,
+            "id": str(self.id),
             "type": self.type,
-            "ticket_id": self.ticket_id,
-            "author_id": self.author_id,
+            "ticket_id": str(self.ticket_id),
+            "author_id": str(self.author_id),
             "created_at": str(self.created_at),
             "content": self.content,
-            "file_id": self.file_id,
+            "file_id": str(self.file_id) if self.file_id else None,
         }

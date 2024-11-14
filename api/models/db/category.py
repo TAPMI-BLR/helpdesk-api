@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from uuid import UUID
 
 
 @dataclass(frozen=True)
 class Category:
-    id: int
+    id: UUID
     name: str
 
     def to_dict(self):
-        return {"id": self.id, "name": self.name}
+        return {"id": str(self.id), "name": self.name}

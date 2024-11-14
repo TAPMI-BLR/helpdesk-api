@@ -1,11 +1,16 @@
 from dataclasses import dataclass
+from uuid import UUID
 
 
 @dataclass(frozen=True)
 class SubCategory:
-    id: int
-    parent_id: int
+    id: UUID
+    category_id: UUID
     name: str
 
     def to_dict(self):
-        return {"id": self.id, "parent_id": self.parent_id, "name": self.name}
+        return {
+            "id": str(self.id),
+            "category_id": str(self.category_id),
+            "name": self.name,
+        }

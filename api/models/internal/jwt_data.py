@@ -2,10 +2,15 @@ from datetime import datetime
 
 
 class JWT_Data:
-    def __init__(self, name, email, uuid, roles, exp, iat, nbf, iss) -> None:
+    def __init__(
+        self, name, email, roles, exp, iat, nbf, iss, uuid: str = None
+    ) -> None:
+        # If role is "signup" then UUID is not needed
         # Make sure none of the values are None
-        if None in (name, email, uuid, roles, exp, iat, nbf, iss):
+        if None in (name, email, roles, exp, iat, nbf, iss):
             raise ValueError("All values must be provided")
+        if uuid is None and "signup" not in roles:
+            raise ValueError("UUID is required for all roles except 'signup'")
         self.name = name
         self.email = email
         self.uuid = uuid

@@ -5,4 +5,4 @@ from dataclasses import dataclass
 class RegisterForm:
     name: str
     email: str
-    data: dict
+    data: str
