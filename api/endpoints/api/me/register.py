@@ -1,4 +1,5 @@
 from mayim import Mayim
+from json import JSONDecodeError, loads
 from sanic import Request, json
 from sanic.views import HTTPMethodView
 from sanic_ext import validate
@@ -20,13 +21,17 @@ class MeRegister(HTTPMethodView):
     async def post(self, request: Request, jwt_data: JWT_Data, form: RegisterForm):
         # Get the data from the request
         name = form.name
-        email = request.form.get("email")
-        data = request.form.get("data")
-        # Compare the provided name and email with the JWT data
+        email = form.email
+        data = form.data
+        # Convert string to dict
+        try:
+            data = loads(data)
+        except JSONDecodeError:
+            return json({"error": "Data is not a valid JSON"}, 400)
+        # Compare the provided email with the JWT data
         if jwt_data.email != email:
             return json({"error": "Email mismatch"}, 400)
-        if jwt_data.name != name:
-            return json({"error": "Name mismatch"}, 400)
+        # TODO: Check Name simlarity
         # Ensure Data is not Empty
         if not data:
             return json({"error": "Data cannot be empty"}, 400)
@@ -44,7 +49,6 @@ class MeRegister(HTTPMethodView):
                 status=400,
             )
         # Get user and generate JWT
-        user = await executor.get_user_by_email(email)
         try:
             user = await executor.get_user_by_email(email)
         except RecordNotFound:
@@ -58,7 +62,7 @@ class MeRegister(HTTPMethodView):
             payload = {
                 "name": user.name,
                 "email": user.email,
-                "uuid": user.email,
+                "uuid": str(user.id),
                 "roles": ["user"],
             }
             if user.is_team:

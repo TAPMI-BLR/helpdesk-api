@@ -20,13 +20,13 @@ from .api.tickets.status import TicketStatus
 from api.app import appserver
 
 appserver.add_route(
-    CategoriesManage.as_view(), "/api/admin/categories/<category_id:int>/manage"
+    CategoriesManage.as_view(), "/api/admin/categories/<category_id:uuid>/manage"
 )
 appserver.add_route(CategoriesRoot.as_view(), "/api/admin/categories")
 appserver.add_route(SLARoot.as_view(), "/api/admin/sla")
-appserver.add_route(SLAManage.as_view(), "/api/admin/sla/<sla_id:int>/manage")
+appserver.add_route(SLAManage.as_view(), "/api/admin/sla/<sla_id:uuid>/manage")
 appserver.add_route(TeamRoot.as_view(), "/api/admin/teams")
-appserver.add_route(TeamManage.as_view(), "/api/admin/teams/<team_id:int>/manage")
+appserver.add_route(TeamManage.as_view(), "/api/admin/teams/<team_id:uuid>/manage")
 appserver.add_route(AuthCallback.as_view(), "/api/auth/callback")
 appserver.add_route(AuthEntra.as_view(), "/api/auth/entra")
 appserver.add_route(MeCreate.as_view(), "/api/me/create")
@@ -37,5 +37,5 @@ appserver.add_route(SeverityOptions.as_view(), "/api/options/severity")
 appserver.add_route(SLAOptions.as_view(), "/api/options/sla")
 appserver.add_route(Ping.as_view(), "/api/ping")
 appserver.add_route(TicketRoot.as_view(), "/api/tickets")
-appserver.add_route(TicketMessages.as_view(), "/api/tickets/<ticket_id:int>/messages")
-appserver.add_route(TicketStatus.as_view(), "/api/tickets/<ticket_id:int>/status")
+appserver.add_route(TicketMessages.as_view(), "/api/tickets/<ticket_id:uuid>/messages")
+appserver.add_route(TicketStatus.as_view(), "/api/tickets/<ticket_id:uuid>/status")
