@@ -15,7 +15,7 @@ from api.models.requests.register_form import RegisterForm
 
 
 class MeRegister(HTTPMethodView):
-    @validate(form=RegisterForm)
+    @validate(form=RegisterForm, body_argument="form")
     @require_login()
     @require_role(required_role="signup")
     async def post(self, request: Request, jwt_data: JWT_Data, form: RegisterForm):

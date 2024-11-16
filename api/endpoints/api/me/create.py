@@ -14,8 +14,7 @@ from api.models.requests.ticket_form import TicketForm
 
 
 class MeCreate(HTTPMethodView):
-    # TODO
-    @validate(form=TicketForm)
+    @validate(form=TicketForm, body_argument="form")
     @require_login()
     @require_role(required_role="user", allow_higher=True)
     async def post(self, request: Request, jwt_data: JWT_Data, form: TicketForm):
@@ -26,7 +25,7 @@ class MeCreate(HTTPMethodView):
 
         # Get the data from the request
         subcategory_id = form.subcategory_id
-        inital_msg = form.subcategory_id
+        inital_msg = form.inital_message
         title = form.title
 
         # Ensure Data is not Empty

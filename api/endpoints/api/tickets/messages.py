@@ -80,7 +80,7 @@ class TicketMessages(HTTPMethodView):
         else:
             return json({"error": "Unauthorized"}, 403)
 
-    @validate(form=MessageForm)
+    @validate(form=MessageForm, body_argument="form")
     @require_login()
     @require_role(required_role="user", allow_higher=True)
     async def post(
