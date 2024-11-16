@@ -23,7 +23,13 @@ class TicketRoot(HTTPMethodView):
             assert limit <= 50
             assert limit > 0
         except AssertionError:
-            return json({"error": "Limit must be between 1 and 50"}, status=400)
+            return json(
+                {
+                    "error": "Invalid Parameters",
+                    "message": "Limit must be between 1 and 50",
+                },
+                status=400,
+            )
         offset = page * limit
         # Get Ticket Executor
         executor = Mayim.get(TicketExecutor)
@@ -45,7 +51,13 @@ class TicketRoot(HTTPMethodView):
                     limit=limit,
                 )
             else:
-                return json({"error": "Unauthorized"}, status=403)
+                return json(
+                    {
+                        "error": "Forbidden",
+                        "message": "You do not have the required role to access these tickets",
+                    },
+                    status=403,
+                )
         return json(
-            {"ststus": "success", "tickets": [ticket.to_dict() for ticket in tickets]}
+            {"status": "success", "tickets": [ticket.to_dict() for ticket in tickets]}
         )

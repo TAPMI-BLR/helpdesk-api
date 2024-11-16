@@ -27,14 +27,32 @@ class MeRegister(HTTPMethodView):
         try:
             data = loads(data)
         except JSONDecodeError:
-            return json({"error": "Data is not a valid JSON"}, 400)
+            return json(
+                {
+                    "error": "Invalid Data Format",
+                    "message": "The provided data is not a valid JSON format",
+                },
+                400,
+            )
         # Compare the provided email with the JWT data
         if jwt_data.email != email:
-            return json({"error": "Email mismatch"}, 400)
+            return json(
+                {
+                    "error": "Email Mismatch",
+                    "message": "The email provided does not match the email associated with the JWT",
+                },
+                400,
+            )
         # TODO: Check Name simlarity
         # Ensure Data is not Empty
         if not data:
-            return json({"error": "Data cannot be empty"}, 400)
+            return json(
+                {
+                    "error": "Invalid Data",
+                    "message": "The additional data provided is missing or empty",
+                },
+                400,
+            )
         # Create the User
         executor = Mayim.get(UserExecutor)
         try:
@@ -43,8 +61,8 @@ class MeRegister(HTTPMethodView):
             # User Already Exists
             return json(
                 {
-                    "error": "User already exists",
-                    "message": "Please attempt to login after a few minutes",
+                    "error": "User Already Exists",
+                    "message": "An account with this email already exists. Please try logging in instead.",
                 },
                 status=400,
             )
@@ -84,8 +102,11 @@ class MeRegister(HTTPMethodView):
         else:
             return json(
                 {
-                    "error": "Token generation failed",
-                    "message": "Please attempt to login after a few minutes",
+                    "error": "Token Generation Failed",
+                    "message": (
+                        "An error occurred while generating the authentication token. "
+                        "Please try logging in again after a few minutes."
+                    ),
                 },
                 status=400,
             )

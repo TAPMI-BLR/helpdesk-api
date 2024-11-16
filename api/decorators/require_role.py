@@ -25,7 +25,7 @@ def require_role(
                     return json(
                         {
                             "error": "Unauthorized access",
-                            "message": "Check is missing required data",
+                            "message": "JWT data is missing or invalid",
                         },
                         status=401,
                     )
@@ -36,7 +36,7 @@ def require_role(
                 return json(
                     {
                         "error": "Unauthorized access",
-                        "message": "Check is missing required data",
+                        "message": "JWT data is required but missing or invalid",
                     },
                     status=401,
                 )
@@ -68,7 +68,7 @@ def require_role(
                 return json(
                     {
                         "error": "Unauthorized access",
-                        "message": f"User lacks the required role ({required_role})",
+                        "message": f"Access denied: User does not have the required role ({required_role})",
                     },
                     status=401,
                 )

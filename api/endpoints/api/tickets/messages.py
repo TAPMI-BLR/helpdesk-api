@@ -38,7 +38,11 @@ class TicketMessages(HTTPMethodView):
         except AssertionError:
             return json(
                 {
-                    "error": "Limit and page must be positive integers, limit must be below 50"
+                    "error": "Invalid parameters",
+                    "message": (
+                        "Limit must be a positive integer less than or equal to 50,"
+                        " and page must be a non-negative integer."
+                    ),
                 },
                 400,
             )
@@ -51,7 +55,13 @@ class TicketMessages(HTTPMethodView):
         try:
             ticket = await ticket_executor.get_ticket_by_id(ticket_id)
         except RecordNotFound:
-            return json({"error": "Ticket not found"}, 404)
+            return json(
+                {
+                    "error": "Ticket not found",
+                    "message": "The requested ticket does not exist.",
+                },
+                404,
+            )
 
         # Get Messages by Ticket ID
         offset = limit * page
@@ -94,7 +104,13 @@ class TicketMessages(HTTPMethodView):
         try:
             ticket = await ticket_executor.get_ticket_by_id(ticket_id)
         except RecordNotFound:
-            return json({"status": "failure", "error": "Ticket not found"}, 404)
+            return json(
+                {
+                    "error": "Ticket not found",
+                    "message": "The requested ticket does not exist.",
+                },
+                404,
+            )
 
         # Check if user is allowed to post a message and set message type
         if ticket.user_id == jwt_data.uuid:
@@ -102,7 +118,13 @@ class TicketMessages(HTTPMethodView):
         elif jwt_data.is_admin() or jwt_data.is_support():
             message_type = MessageType.SUPPORT
         else:
-            return json({"status": "failure", "error": "Unauthorized"}, 403)
+            return json(
+                {
+                    "error": "Unauthorized",
+                    "message": "You do not have permission to post a message on this ticket.",
+                },
+                403,
+            )
 
         # Get message data
         message = form.content
@@ -111,7 +133,10 @@ class TicketMessages(HTTPMethodView):
         # Create message
         if file:
             return json(
-                {"status": "failure", "error": "File uploads are not supported yet"},
+                {
+                    "error": "Not Implemented",
+                    "message": "File uploads are not supported yet.",
+                },
                 501,
             )
         else:
@@ -120,8 +145,20 @@ class TicketMessages(HTTPMethodView):
                     ticket_id, jwt_data.uuid, message, message_type
                 )
             except RecordNotFound:
-                return json({"status": "failure", "error": "Ticket not found"}, 404)
+                return json(
+                    {
+                        "error": "Ticket not found",
+                        "message": "The requested ticket does not exist.",
+                    },
+                    404,
+                )
             except Exception as e:
                 logger.error(e)
-                return json({"status": "failure", "error": "An error occurred"}, 500)
+                return json(
+                    {
+                        "error": "Internal Server Error",
+                        "message": "An unexpected error occurred while creating the message.",
+                    },
+                    500,
+                )
         return json({"status": "success"}, 200)

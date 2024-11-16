@@ -25,16 +25,30 @@ class MeCreate(HTTPMethodView):
 
         # Get the data from the request
         subcategory_id = form.subcategory_id
-        inital_msg = form.inital_message
+        inital_msg = form.initial_message
         title = form.title
 
         # Ensure Data is not Empty
         if not subcategory_id:
-            return json({"error": "Category ID cannot be empty"}, 400)
+            return json(
+                {
+                    "error": "Validation Error",
+                    "message": "Subcategory ID cannot be empty",
+                },
+                400,
+            )
         if not title:
-            return json({"error": "Title cannot be empty"}, 400)
+            return json(
+                {"error": "Validation Error", "message": "Title cannot be empty"}, 400
+            )
         if not inital_msg:
-            return json({"error": "Inital Message cannot be empty"}, 400)
+            return json(
+                {
+                    "error": "Validation Error",
+                    "message": "Initial Message cannot be empty",
+                },
+                400,
+            )
 
         # Get the default config
         default_config = await system_executor.get_default_ticket_config()

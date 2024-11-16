@@ -17,7 +17,10 @@ class TicketStatus(HTTPMethodView):
         try:
             ticket = await executor.get_ticket_by_id(ticket_id)
         except RecordNotFound:
-            return json({"error": "Ticket not found"}, status=404)
+            return json(
+                {"error": "Not Found", "message": "The requested ticket was not found"},
+                status=404,
+            )
         if (
             ticket.user_id == jwt_data.uuid
             or jwt_data.is_support()
@@ -26,7 +29,11 @@ class TicketStatus(HTTPMethodView):
             return json({"status": "success", "ticket": ticket.to_dict()})
 
         return json(
-            {"error": "You do not have permission to view this ticket"}, status=403
+            {
+                "error": "Forbidden",
+                "message": "You do not have permission to view this ticket",
+            },
+            status=403,
         )
 
     @require_login()
@@ -37,7 +44,10 @@ class TicketStatus(HTTPMethodView):
         try:
             ticket = await executor.get_ticket_by_id(ticket_id)
         except RecordNotFound:
-            return json({"error": "Ticket not found"}, status=404)
+            return json(
+                {"error": "Not Found", "message": "The requested ticket was not found"},
+                status=404,
+            )
         if (
             ticket.user_id == jwt_data.uuid
             or jwt_data.is_support()
@@ -51,12 +61,19 @@ class TicketStatus(HTTPMethodView):
                 await executor.update_ticket_resolution(ticket_id, resolution)
             else:
                 return json(
-                    {"error": "You must provide a status or resolution to be updated"},
+                    {
+                        "error": "Bad Request",
+                        "message": "You must provide either a status or resolution to update the ticket",
+                    },
                     status=400,
                 )
 
             return json({"status": "success"})
 
         return json(
-            {"error": "You do not have permission to update this ticket"}, status=403
+            {
+                "error": "Forbidden",
+                "message": "You do not have permission to update this ticket",
+            },
+            status=403,
         )
