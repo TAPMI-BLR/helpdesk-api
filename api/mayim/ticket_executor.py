@@ -9,16 +9,41 @@ class TicketExecutor(PostgresExecutor):
     generic_prefix = ""
     path = "./queries/tickets/"
 
-    async def get_my_tickets(
-        self, user_id: int, limit: int = 10, offset: int = 0
+    async def get_tickets_as_user(
+        self, user_id: int, limit: int = 10, offset: int = 0, show_closed: bool = False
     ) -> list[Ticket]:
         """Get all tickets for a user"""
+        query = self.get_query("get_tickets_as_user")
+        status_filter = ""
+        if not show_closed:
+            status_filter = "AND ticket_status = 'OPEN'"
+        r = await self.run_sql(
+            query.text,
+            params={
+                "user_id": user_id,
+                "limit": limit,
+                "offset": offset,
+                "status_filter": status_filter,
+            },
+        )
+        return self.hydrator.hydrate(r, Ticket)
 
     async def get_ticket_by_id(self, ticket_id: int) -> Ticket:
         """Get a ticket by its ID"""
 
-    async def get_open_tickets(self, limit: int = 10, offset: int = 0) -> list[Ticket]:
-        """Get all open tickets"""
+    async def get_tickets_as_team(
+        self, limit: int = 10, offset: int = 0, show_closed: bool = False
+    ) -> list[Ticket]:
+        """Get tickets as a team member"""
+        query = self.get_query("get_tickets_as_team")
+        status_filter = ""
+        if not show_closed:
+            status_filter = "AND ticket_status = 'OPEN'"
+        r = await self.run_sql(
+            query.text,
+            params={"limit": limit, "offset": offset, "status_filter": status_filter},
+        )
+        return self.hydrator.hydrate(r, Ticket)
 
     async def create_ticket(
         self, user_id: int, subcategory_id: int, title: str, config: Config

@@ -1,4 +1,5 @@
 SELECT *
 FROM tickets
-WHERE ticket_status = "OPEN"
+WHERE user_id = $user_id
+$status_filter
 LIMIT $limit OFFSET $offset;

@@ -36,19 +36,20 @@ class TicketRoot(HTTPMethodView):
 
         if query.as_user:
             # Get Tickets as User
-            # TODO: Flag to show closed tickets
-            tickets = await executor.get_my_tickets(
+            tickets = await executor.get_tickets_as_user(
                 user_id=jwt_data.uuid,
                 offset=offset,
+                show_closed=query.show_closed,
             )
         else:
             # Check if user has role of team or sys_admin in jwt_data.roles list
             if "team" in jwt_data.roles or "sys_admin" in jwt_data.roles:
                 # Get Tickets as Team
                 # TODO: Get ALL tickets (with show closed flag) query in executor
-                tickets = await executor.get_open_tickets(
+                tickets = await executor.get_tickets_as_team(
                     offset=offset,
                     limit=limit,
+                    show_closed=query.show_closed,
                 )
             else:
                 return json(
