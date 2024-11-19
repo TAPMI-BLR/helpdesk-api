@@ -1,22 +1,22 @@
 from enum import Enum
 
 
-class MessageType(Enum):
-    USER = 1
-    SYSTEM = 2
-    SUPPORT = 3
+class MessageType(str, Enum):
+    USER = "USER"
+    SYSTEM = "SYSTEM"
+    SUPPORT = "SUPPORT"
 
 
-class CategoryTeamRole(Enum):
-    ADMIN = 1
-    MEMBER = 2
+class CategoryTeamRole(str, Enum):
+    ADMIN = "ADMIN"
+    MEMBER = "MEMBER"
 
 
-class TicketStatus(Enum):
-    OPEN = 1
-    CLOSED = 2
+class TicketStatus(str, Enum):
+    OPEN = "OPEN"
+    CLOSED = "CLOSED"
 
 
-class TicketResolution(Enum):
-    RESOLVED = 1
-    UNRESOLVED = 2
+class TicketResolution(str, Enum):
+    RESOLVED = "RESOLVED"
+    UNRESOLVED = "UNRESOLVED"

@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from uuid import UUID
 
+from pydantic import BaseModel
 
-@dataclass(frozen=True)
-class SubCategory:
+
+class SubCategory(BaseModel):
     id: UUID
     category_id: UUID
     name: str

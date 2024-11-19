@@ -3,18 +3,19 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from api.models.db.file import File
 from api.models.db.message_author import MessageAuthor
 from api.models.enums import MessageType
 
 
-class Message(BaseModel):
+class FullMessage(BaseModel):
     id: UUID
     type: MessageType
     ticket_id: UUID
     author: MessageAuthor
     created_at: datetime
     content: str | None
-    file_id: UUID | None
+    file_id: File | None
 
     def to_dict(self):
         return {

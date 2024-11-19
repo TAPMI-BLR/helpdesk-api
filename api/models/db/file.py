@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from uuid import UUID
 
+from pydantic import BaseModel
 
-@dataclass(frozen=True)
-class File:
+
+class File(BaseModel):
     id: UUID
     type: str
     data: bytes

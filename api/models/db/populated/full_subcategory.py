@@ -2,17 +2,17 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from api.models.db.category import Category
 
-class Severity(BaseModel):
+
+class SubCategory(BaseModel):
     id: UUID
+    category: Category
     name: str
-    level: int
-    note: str
 
     def to_dict(self):
         return {
             "id": str(self.id),
+            "category_id": self.category.to_dict(),
             "name": self.name,
-            "level": self.level,
-            "note": self.note,
         }

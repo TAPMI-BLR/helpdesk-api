@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from uuid import UUID
 
+from pydantic import BaseModel
 
-@dataclass(frozen=True)
-class MessageAuthor:
+
+class MessageAuthor(BaseModel):
     id: UUID
     name: str
 

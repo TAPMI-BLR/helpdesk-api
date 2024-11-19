@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from typing import Optional
+
+from pydantic import BaseModel
 from sanic.request import File
 
 
-@dataclass
-class MessageForm:
+class MessageForm(BaseModel):
     content: str
     file: Optional[File] = None

@@ -3,13 +3,17 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from api.models.db.severity import Severity
+from api.models.db.sla import SLA
+from api.models.db.user import User
 
-class Config(BaseModel):
+
+class FullConfig(BaseModel):
     id: UUID
     created_at: datetime
-    default_sla: UUID
-    default_severity: UUID
-    default_assignee: UUID
+    default_sla: SLA
+    default_severity: Severity
+    default_assignee: User
 
     def to_dict(self):
         return {

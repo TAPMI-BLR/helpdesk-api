@@ -1,8 +1,7 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class TicketsQuery:
+class TicketsQuery(BaseModel):
     limit: int = 10
     page: int = 0
     show_closed: bool = False

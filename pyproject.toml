@@ -15,12 +15,14 @@ taskipy = "^1.13.0"
 sanic-ext = "^23.12.0"
 mayim = {extras = ["postgres"], version = "^1.1.0"}
 psycopg = {extras = ["binary"], version = "^3.2.3"}
+pydantic = "^2.9.2"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.1"
 black = "^24.8.0"
 pre-commit = "^3.8.0"
 python-dotenv = "^1.0.0"
+isort = "^5.13.2"
 
 [tool.taskipy.tasks]
 server = { cmd = "python -m api.server", help = "Runs the API Server"}

@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 from uuid import UUID
 
+from pydantic import BaseModel
 
-@dataclass(frozen=True)
-class User:
+
+class User(BaseModel):
     id: UUID
     name: str
     email: str
@@ -13,7 +13,7 @@ class User:
 
     def to_dict(self):
         return {
-            "id": self.id,
+            "id": str(self.id),
             "name": self.name,
             "email": self.email,
             "data": self.data,

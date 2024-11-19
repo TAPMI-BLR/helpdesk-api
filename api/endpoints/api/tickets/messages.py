@@ -72,7 +72,7 @@ class TicketMessages(HTTPMethodView):
         message = [msg.to_dict() for msg in messages]
 
         # If user owns the ticket
-        if ticket.user_id == jwt_data.uuid:
+        if str(ticket.user_id) == jwt_data.uuid:
             return json({"status": "success", "messages": message}, 200)
 
         # If user is an admin
@@ -113,7 +113,7 @@ class TicketMessages(HTTPMethodView):
             )
 
         # Check if user is allowed to post a message and set message type
-        if ticket.user_id == jwt_data.uuid:
+        if str(ticket.user_id) == jwt_data.uuid:
             message_type = MessageType.USER
         elif jwt_data.is_admin() or jwt_data.is_support():
             message_type = MessageType.SUPPORT

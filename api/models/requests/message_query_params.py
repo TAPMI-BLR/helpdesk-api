@@ -1,7 +1,6 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class MessageQueryParams:
+class MessageQueryParams(BaseModel):
     limit: int = 10
     page: int = 0
