@@ -1,7 +1,7 @@
 import uuid
 
 from sanic.request import Request
-from sanic.response import redirect, json
+from sanic.response import json, redirect
 from sanic.views import HTTPMethodView
 
 

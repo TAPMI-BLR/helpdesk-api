@@ -3,8 +3,8 @@ from sanic import Request, json
 from sanic.views import HTTPMethodView
 from sanic_ext import validate
 
-from api.decorators.require_role import require_role
 from api.decorators.require_login import require_login
+from api.decorators.require_role import require_role
 from api.mayim.message_executor import MessageExecutor
 from api.mayim.system_executor import SystemExecutor
 from api.mayim.ticket_executor import TicketExecutor

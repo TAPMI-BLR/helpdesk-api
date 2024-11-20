@@ -1,12 +1,12 @@
-from sanic.views import HTTPMethodView
+import jwt
+from mayim import Mayim
+from mayim.exception import RecordNotFound
 from sanic import Request, redirect
 from sanic.log import logger
-import jwt
+from sanic.views import HTTPMethodView
 
 from api.app import HelpDesk
 from api.mayim.user_executor import UserExecutor
-from mayim import Mayim
-from mayim.exception import RecordNotFound
 
 
 class AuthCallback(HTTPMethodView):

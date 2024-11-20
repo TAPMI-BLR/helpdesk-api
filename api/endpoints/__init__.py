@@ -1,9 +1,11 @@
-from .api.admin.categories.root import CategoriesRoot
+from api.app import appserver
+
 from .api.admin.categories.manage import CategoriesManage
-from .api.admin.sla.root import SLARoot
+from .api.admin.categories.root import CategoriesRoot
 from .api.admin.sla.manage import SLAManage
-from .api.admin.teams.root import TeamRoot
+from .api.admin.sla.root import SLARoot
 from .api.admin.teams.manage import TeamManage
+from .api.admin.teams.root import TeamRoot
 from .api.auth.callback import AuthCallback
 from .api.auth.entra import AuthEntra
 from .api.me.create import MeCreate
@@ -13,11 +15,9 @@ from .api.options.category import CategoryOptions
 from .api.options.severity import SeverityOptions
 from .api.options.sla import SLAOptions
 from .api.ping import Ping
-from .api.tickets.root import TicketRoot
 from .api.tickets.messages import TicketMessages
+from .api.tickets.root import TicketRoot
 from .api.tickets.status import TicketStatus
-
-from api.app import appserver
 
 appserver.add_route(
     CategoriesManage.as_view(), "/api/admin/categories/<category_id:uuid>/manage"

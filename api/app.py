@@ -1,14 +1,11 @@
-import json
-from datetime import datetime, timedelta, timezone
-
 import aiohttp
+import json
 import jwt
-from sanic import Sanic
-from sanic.log import logger
-
-
 from api.models.internal.jwt_data import JWT_Data
 from api.models.internal.jwt_status import JWT_Status
+from datetime import datetime, timedelta, timezone
+from sanic import Sanic
+from sanic.log import logger
 
 
 class HelpDesk(Sanic):
@@ -59,17 +56,17 @@ class HelpDesk(Sanic):
         try:
             jwt_data = self.decode_jwt(jwt_token)
         except jwt.exceptions.ImmatureSignatureError:
-            # Raised when a token’s nbf claim represents a time in the future
+            # Raised when a token�s nbf claim represents a time in the future
             d = JWT_Status(
                 authenticated=False, message="JWT Token not allowed to be used at time"
             )
         except jwt.exceptions.InvalidIssuedAtError:
-            # Raised when a token’s iat claim is in the future
+            # Raised when a token�s iat claim is in the future
             d = JWT_Status(
                 authenticated=False, message="JWT Token issued in the future"
             )
         except jwt.exceptions.ExpiredSignatureError:
-            # Raised when a token’s exp claim indicates that it has expired
+            # Raised when a token�s exp claim indicates that it has expired
             d = JWT_Status(authenticated=False, message="JWT Token has expired")
         except jwt.exceptions.InvalidTokenError:
             # Generic invalid token

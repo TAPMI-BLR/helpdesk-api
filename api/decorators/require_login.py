@@ -1,4 +1,5 @@
 from typing import Tuple
+
 from sanic import Request
 from sanic.response import json
 from sanic.views import HTTPMethodView

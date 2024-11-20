@@ -1,7 +1,8 @@
+from json import dumps
+
 from mayim import PostgresExecutor
 
 from api.models.db.user import User
-from json import dumps
 
 
 class UserExecutor(PostgresExecutor):

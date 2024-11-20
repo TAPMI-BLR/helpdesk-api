@@ -1,4 +1,5 @@
 from typing import List
+
 from mayim import PostgresExecutor
 
 from api.models.db.message import Message

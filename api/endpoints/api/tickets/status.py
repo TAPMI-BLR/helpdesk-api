@@ -1,7 +1,7 @@
 from mayim import Mayim
+from mayim.exception import RecordNotFound
 from sanic import Request, json
 from sanic.views import HTTPMethodView
-from mayim.exception import RecordNotFound
 
 from api.decorators.require_login import require_login
 from api.decorators.require_role import require_role

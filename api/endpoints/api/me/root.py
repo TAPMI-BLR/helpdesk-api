@@ -1,8 +1,9 @@
 from mayim import Mayim
 from sanic import Request, json
 from sanic.views import HTTPMethodView
-from api.decorators.require_role import require_role
+
 from api.decorators.require_login import require_login
+from api.decorators.require_role import require_role
 from api.mayim.user_executor import UserExecutor
 from api.models.internal.jwt_data import JWT_Data
 

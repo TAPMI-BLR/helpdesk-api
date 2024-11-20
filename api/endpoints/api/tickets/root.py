@@ -3,8 +3,8 @@ from sanic import Request, json
 from sanic.views import HTTPMethodView
 from sanic_ext import validate
 
-from api.decorators.require_role import require_role
 from api.decorators.require_login import require_login
+from api.decorators.require_role import require_role
 from api.mayim.ticket_executor import TicketExecutor
 from api.models.internal.jwt_data import JWT_Data
 from api.models.requests.tickets_query import TicketsQuery
@@ -45,7 +45,6 @@ class TicketRoot(HTTPMethodView):
             # Check if user has role of team or sys_admin in jwt_data.roles list
             if "team" in jwt_data.roles or "sys_admin" in jwt_data.roles:
                 # Get Tickets as Team
-                # TODO: Get ALL tickets (with show closed flag) query in executor
                 tickets = await executor.get_tickets_as_team(
                     offset=offset,
                     limit=limit,
@@ -59,6 +58,7 @@ class TicketRoot(HTTPMethodView):
                     },
                     status=403,
                 )
+
         return json(
             {"status": "success", "tickets": [ticket.to_dict() for ticket in tickets]}
         )
