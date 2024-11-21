@@ -22,11 +22,19 @@ class TicketStatus(HTTPMethodView):
                 status=404,
             )
         if (
-            ticket.user_id == jwt_data.uuid
+            str(ticket.user_id) == jwt_data.uuid
             or jwt_data.is_support()
             or jwt_data.is_admin()
         ):
-            return json({"status": "success", "ticket": ticket.to_dict()})
+            return json(
+                {
+                    "status": "success",
+                    "created_at": str(ticket.created_at),
+                    "resolution_status": ticket.resolution_status,
+                    "ticket_status": ticket.ticket_status,
+                    "closed_at": str(ticket.closed_at) if ticket.closed_at else None,
+                }
+            )
 
         return json(
             {

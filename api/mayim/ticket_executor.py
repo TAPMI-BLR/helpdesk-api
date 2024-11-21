@@ -1,6 +1,7 @@
 from mayim import PostgresExecutor
 
 from api.models.db.config import Config
+from api.models.db.populated.full_ticket import FullTicket
 from api.models.db.ticket import Ticket
 from api.models.enums import TicketResolution, TicketStatus
 
@@ -9,6 +10,9 @@ class TicketExecutor(PostgresExecutor):
     generic_prefix = ""
     path = "./queries/tickets/"
     limit_page_filter = " LIMIT $limit OFFSET $offset"
+
+    async def get_full_ticket_by_id(self, ticket_id: int) -> FullTicket:
+        """Get a full ticket by its ID"""
 
     async def get_tickets_as_user(
         self, user_id: int, limit: int = 10, offset: int = 0, show_closed: bool = False

@@ -15,6 +15,7 @@ from .api.options.category import CategoryOptions
 from .api.options.severity import SeverityOptions
 from .api.options.sla import SLAOptions
 from .api.ping import Ping
+from .api.tickets.info import TicketInfo
 from .api.tickets.messages import TicketMessages
 from .api.tickets.root import TicketRoot
 from .api.tickets.status import TicketStatus
@@ -36,6 +37,7 @@ appserver.add_route(CategoryOptions.as_view(), "/api/options/category")
 appserver.add_route(SeverityOptions.as_view(), "/api/options/severity")
 appserver.add_route(SLAOptions.as_view(), "/api/options/sla")
 appserver.add_route(Ping.as_view(), "/api/ping")
+appserver.add_route(TicketInfo.as_view(), "/api/tickets/<ticket_id:uuid>")
 appserver.add_route(TicketRoot.as_view(), "/api/tickets")
 appserver.add_route(TicketMessages.as_view(), "/api/tickets/<ticket_id:uuid>/messages")
 appserver.add_route(TicketStatus.as_view(), "/api/tickets/<ticket_id:uuid>/status")
