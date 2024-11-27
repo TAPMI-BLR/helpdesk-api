@@ -9,6 +9,8 @@ from api.mayim.message_executor import MessageExecutor
 from api.mayim.system_executor import SystemExecutor
 from api.mayim.ticket_executor import TicketExecutor
 from api.mayim.user_executor import UserExecutor
+from api.mayim.sla_executor import SLAExecutor
+from api.mayim.team_executor import TeamExecutor
 
 from . import endpoints  # noqa: F401
 
@@ -61,6 +63,8 @@ Extend.register(
             TicketExecutor,
             CategoryExecutor,
             SystemExecutor,
+            SLAExecutor,
+            TeamExecutor,
         ],
         dsn=f"postgres://{config['DB_USERNAME']}:{config['DB_PASSWORD']}@{config['DB_HOST']}:{config['DB_PORT']}/{config['DB_NAME']}",  # noqa: E501
     )
