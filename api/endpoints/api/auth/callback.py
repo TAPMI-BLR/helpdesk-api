@@ -25,6 +25,16 @@ class AuthCallback(HTTPMethodView):
         # Get the public key to verify the token.
         key = app.get_entra_jwt_keys().get(kid, "")
 
+        # Check if the key is found
+        try:
+            assert key != ""
+        except AssertionError:
+            logger.warning("Key not found for JWT")
+            # Server side issue, we might be missing the latest keys
+            await app.load_entra_jwks()
+            # Try again
+            key = app.get_entra_jwt_keys().get(kid, "")
+
         try:
             # Decode the token.
             decoded = jwt.decode(
@@ -33,6 +43,10 @@ class AuthCallback(HTTPMethodView):
                 algorithms=["RS256"],
                 audience=request.app.config["AZURE_AD_CLIENT_ID"],
             )
+        except jwt.InvalidKeyError:
+            logger.warning("Invalid key for JWT")
+            # Server side issue, we might be missing the latest keys
+            return redirect("/?error=verify_error")
         except jwt.exceptions.InvalidAudienceError:
             logger.warning("Invalid audience for JWT")
             # Invalid token
