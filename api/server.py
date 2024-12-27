@@ -1,7 +1,8 @@
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from mayim.extension import SanicMayimExtension
 from sanic.log import logger
 from sanic_ext import Extend
+from os import getenv
 
 from api.app import HelpDesk, appserver
 from api.mayim.category_executor import CategoryExecutor
@@ -14,9 +15,11 @@ from api.mayim.team_executor import TeamExecutor
 
 from . import endpoints  # noqa: F401
 
-logger.debug("Loading ENV")
-config = dotenv_values(".env")
+# Load the .env file (mainly for local development)
+load_dotenv()
 
+config = {}
+logger.debug("Loading RSA Keys")
 # Read the public and private keys and add them to the config.
 with open("public-key.pem") as public_key_file:
     config["PUB_KEY"] = public_key_file.read()
@@ -24,23 +27,31 @@ with open("public-key.pem") as public_key_file:
 with open("private-key.pem") as private_key_file:
     config["PRIV_KEY"] = private_key_file.read()
 
+logger.debug("Loading Configuration")
+# Pull enviroment variables (or use defaults) and add them to the config.
+config.update(
+    {
+        "IS_PROD": getenv("IS_PROD", "false"),
+        "HOST": getenv("HOST", "default"),
+        "PROXIES_COUNT": int(getenv("PROXIES_COUNT", 0)),
+        "DB_HOST": getenv("DB_HOST", "postgres"),
+        "DB_PORT": int(getenv("DB_PORT", 5432)),
+        "DB_NAME": getenv("DB_NAME", "helpdesk"),
+        "DB_USERNAME": getenv("DB_USERNAME", "root"),
+        "DB_PASSWORD": getenv("DB_PASSWORD", "password"),
+        "AZURE_AD_CLIENT_ID": getenv("AZURE_AD_CLIENT_ID", None),
+        "AZURE_AD_TENANT_ID": getenv("AZURE_AD_TENANT_ID", None),
+        "AZURE_AD_REDIRECT_URI": getenv(
+            "AZURE_AD_REDIRECT_URI", "http://localhost:8000/api/login/callback"
+        ),
+    }
+)
+
 # Try to get state from the ENV, defaults to being dev.
 is_prod: str = config.get("IS_PROD", "false")
 
 # Convert the string to a bool and update the config with the bool.
 config.update({"IS_PROD": is_prod.lower() == "true"})
-
-# Load default values for the database connection
-config.update(
-    {
-        "DB_HOST": config.get("DB_HOST", "localhost"),
-        "DB_PORT": int(config.get("DB_PORT", 5432)),
-        "DB_USERNAME": config.get("DB_USERNAME", "root"),
-        "DB_PASSWORD": config.get("DB_PASSWORD", "password"),
-        "DB_NAME": config.get("DB_NAME", "helpdesk"),
-        "HOST": config.get("HOST", "DEMO"),
-    },
-)
 
 # Check if AZURE_AD env variables are set
 if (
@@ -53,7 +64,7 @@ if (
 
 app: HelpDesk = appserver
 app.config.update(config)
-app.config.PROXIES_COUNT = int(config.get("PROXIES_COUNT", 0))
+app.config.PROXIES_COUNT = config["PROXIES_COUNT"]
 
 Extend.register(
     SanicMayimExtension(
