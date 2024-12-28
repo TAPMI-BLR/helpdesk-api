@@ -16,6 +16,18 @@ class HelpDesk(Sanic):
     def get_entra_jwt_keys(self) -> dict:
         return self.ctx.entra_public_keys
 
+    # Function to add domain hint & prompt mode (if configured) to the redirect URL
+    def add_optional_entra_parameters(self, url: str) -> str:
+        # Add domain hint to the redirect URL
+        if self.config["AZURE_AD_DOMAIN_HINT"]:
+            url += f"&domain_hint={self.config['AZURE_AD_DOMAIN_HINT']}"
+
+        # Add prompt mode to the redirect URL
+        if self.config["AZURE_AD_PROMPT"]:
+            url += f"&prompt={self.config['AZURE_AD_PROMPT']}"
+
+        return url
+
     async def load_entra_jwks(self):
         # Fetch OpenID Configuration of Entra
         async with aiohttp.ClientSession() as session:

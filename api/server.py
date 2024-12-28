@@ -44,6 +44,8 @@ config.update(
         "AZURE_AD_REDIRECT_URI": getenv(
             "AZURE_AD_REDIRECT_URI", "http://localhost:8000/api/login/callback"
         ),
+        "AZURE_AD_DOMAIN_HINT": getenv("AZURE_AD_DOMAIN_HINT", None),
+        "AZURE_AD_PROMPT": getenv("AZURE_AD_PROMPT", "select_account"),
     }
 )
 
@@ -54,10 +56,14 @@ is_prod: str = config.get("IS_PROD", "false")
 config.update({"IS_PROD": is_prod.lower() == "true"})
 
 # Check if AZURE_AD env variables are set
-if (
-    config.get("AZURE_AD_TENANT_ID") is None
-    or config.get("AZURE_AD_CLIENT_ID") is None
-    or config.get("AZURE_AD_REDIRECT_URI") is None
+if any(
+    config.get(var) is None
+    for var in [
+        "AZURE_AD_TENANT_ID",
+        "AZURE_AD_CLIENT_ID",
+        "AZURE_AD_REDIRECT_URI",
+        "AZURE_AD_DOMAIN_HINT",
+    ]
 ):
     logger.error("MISSING AZURE AD ENV VARIABLES")
     quit(1)

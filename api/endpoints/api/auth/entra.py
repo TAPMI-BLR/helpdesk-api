@@ -4,6 +4,8 @@ from sanic.request import Request
 from sanic.response import json, redirect
 from sanic.views import HTTPMethodView
 
+from api.app import HelpDesk
+
 
 class AuthEntra(HTTPMethodView):
     template = (
@@ -17,6 +19,9 @@ class AuthEntra(HTTPMethodView):
     )
 
     async def get(self, request: Request):
+        """Generate the redirect to login with Entra"""
+        app: HelpDesk = request.app
+        # Generate a random state and nonce
         state = uuid.uuid1()
         nonce = uuid.uuid1()
 
@@ -39,6 +44,8 @@ class AuthEntra(HTTPMethodView):
             "state": state,
             "nonce": nonce,
         }
+        # Add optional parameters to the URL
+        url = app.add_optional_entra_parameters(url)
 
         # Return a redirect
         return redirect(url)

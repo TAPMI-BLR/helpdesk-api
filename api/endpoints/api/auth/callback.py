@@ -76,7 +76,7 @@ class AuthCallback(HTTPMethodView):
         domain: str = email.split("@")[1]
 
         # Hard domain check for email domain being "manipal.edu" or a subdomain
-        if not domain.endswith("manipal.edu"):
+        if not domain.endswith(app.config["AZURE_AD_DOMAIN_HINT"]):
             # Invalid domain
             return redirect(f"/?error=invalid_domain&domain={domain}")
         # Get user from database
