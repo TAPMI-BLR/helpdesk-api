@@ -1,3 +1,4 @@
+from uuid import UUID
 from mayim import Mayim
 from mayim.exception import RecordNotFound
 from sanic import Request, json
@@ -12,7 +13,7 @@ from api.models.internal.jwt_data import JWT_Data
 class TicketInfo(HTTPMethodView):
     @require_login()
     @require_role(required_role="user", allow_higher=True)
-    async def get(self, request: Request, jwt_data: JWT_Data, ticket_id: int):
+    async def get(self, request: Request, jwt_data: JWT_Data, ticket_id: UUID):
         executor = Mayim.get(TicketExecutor)
         try:
             ticket = await executor.get_full_ticket_by_id(ticket_id)
@@ -40,7 +41,7 @@ class TicketInfo(HTTPMethodView):
     @require_login()
     @require_role(required_role="user", allow_higher=True)
     # TODO - Validate via class
-    async def post(self, request: Request, jwt_data: JWT_Data, ticket_id: int):
+    async def post(self, request: Request, jwt_data: JWT_Data, ticket_id: UUID):
         # executor = Mayim.get(TicketExecutor)
         # try:
         #     ticket = await executor.get_ticket_by_id(ticket_id)

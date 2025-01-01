@@ -1,9 +1,10 @@
+from uuid import UUID
 from mayim import PostgresExecutor
 
 from api.models.db.config import Config
 from api.models.db.populated.full_ticket import FullTicket
 from api.models.db.ticket import Ticket
-from api.models.enums import TicketResolution, TicketStatus
+from api.models.enums import TicketResolution
 
 
 class TicketExecutor(PostgresExecutor):
@@ -11,7 +12,7 @@ class TicketExecutor(PostgresExecutor):
     path = "./queries/tickets/"
     limit_page_filter = " LIMIT $limit OFFSET $offset"
 
-    async def get_full_ticket_by_id(self, ticket_id: int) -> FullTicket:
+    async def get_full_ticket_by_id(self, ticket_id: UUID) -> FullTicket:
         """Get a full ticket by its ID"""
 
     async def get_tickets_as_user(
@@ -36,7 +37,7 @@ class TicketExecutor(PostgresExecutor):
             as_list=True,
         )
 
-    async def get_ticket_by_id(self, ticket_id: int) -> Ticket:
+    async def get_ticket_by_id(self, ticket_id: UUID) -> Ticket:
         """Get a ticket by its ID"""
         fragment = self.get_query("fragment_get_ticket").text
         id_filter = " WHERE id = $ticket_id"
@@ -79,11 +80,12 @@ class TicketExecutor(PostgresExecutor):
         return self.hydrator.hydrate(r, Ticket)
 
     async def update_ticket_resolution(
-        self, ticket_id: int, resolution: TicketResolution, name_of_updater: str
+        self, ticket_id: UUID, resolution: TicketResolution, name_of_updater: str
     ) -> Ticket:
         """Update a ticket's resolution"""
 
-    async def update_ticket_status(
-        self, ticket_id: int, status: TicketStatus, name_of_updater: str
-    ) -> Ticket:
-        """Update a ticket's status"""
+    async def close_ticket(self, ticket_id: UUID) -> None:
+        """Mark a ticket as closed"""
+
+    async def reopen_ticket(self, ticket_id: UUID) -> None:
+        """Reopen a closed ticket"""

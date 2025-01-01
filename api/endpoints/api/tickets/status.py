@@ -1,18 +1,23 @@
+from uuid import UUID
 from mayim import Mayim
 from mayim.exception import RecordNotFound
 from sanic import Request, json
 from sanic.views import HTTPMethodView
+from sanic_ext import validate
 
 from api.decorators.require_login import require_login
 from api.decorators.require_role import require_role
+from api.mayim.message_executor import MessageExecutor
 from api.mayim.ticket_executor import TicketExecutor
 from api.models.internal.jwt_data import JWT_Data
+from api.models.requests.ticket_status_form import TicketStatusForm
+from api.models.enums import MessageType, TicketStatus as TicketStatusEnum
 
 
 class TicketStatus(HTTPMethodView):
     @require_login()
     @require_role(required_role="user", allow_higher=True)
-    async def get(self, request: Request, jwt_data: JWT_Data, ticket_id: int):
+    async def get(self, request: Request, jwt_data: JWT_Data, ticket_id: UUID):
         executor = Mayim.get(TicketExecutor)
         try:
             ticket = await executor.get_ticket_by_id(ticket_id)
@@ -44,13 +49,20 @@ class TicketStatus(HTTPMethodView):
             status=403,
         )
 
+    @validate(form=TicketStatusForm, body_argument="form")
     @require_login()
     @require_role(required_role="user", allow_higher=True)
-    # TODO - Validate via class
-    async def post(self, request: Request, jwt_data: JWT_Data, ticket_id: int):
-        executor = Mayim.get(TicketExecutor)
+    async def post(
+        self,
+        request: Request,
+        jwt_data: JWT_Data,
+        ticket_id: UUID,
+        form: TicketStatusForm,
+    ):
+        ticket_executor = Mayim.get(TicketExecutor)
+        message_executor = Mayim.get(MessageExecutor)
         try:
-            ticket = await executor.get_ticket_by_id(ticket_id)
+            ticket = await ticket_executor.get_ticket_by_id(ticket_id)
         except RecordNotFound:
             return json(
                 {"error": "Not Found", "message": "The requested ticket was not found"},
@@ -61,12 +73,53 @@ class TicketStatus(HTTPMethodView):
             or jwt_data.is_support()
             or jwt_data.is_admin()
         ):
-            status = request.json.get("status")
-            resolution = request.json.get("resolution")
-            if status:
-                await executor.update_ticket_status(ticket_id, status)
+            status = form.status
+            resolution = form.resolution
+
+            if status and resolution:
+                return json(
+                    {
+                        "error": "Bad Request",
+                        "message": "You cannot provide both a status and a resolution to update the ticket",
+                    },
+                    status=400,
+                )
+
+            elif status:
+                if (
+                    status == TicketStatusEnum.CLOSED
+                    and ticket.ticket_status == TicketStatusEnum.OPEN
+                ):
+                    await ticket_executor.close_ticket(ticket_id)
+                    await message_executor.create_text_message(
+                        ticket_id,
+                        user_id=jwt_data.uuid,
+                        message=f"Ticket closed by {jwt_data.name}",
+                        message_type=MessageType.SYSTEM,
+                    )
+                elif (
+                    status == TicketStatusEnum.OPEN
+                    and ticket.ticket_status == TicketStatusEnum.CLOSED
+                ):
+                    await ticket_executor.reopen_ticket(ticket_id)
+                    await message_executor.create_text_message(
+                        ticket_id,
+                        user_id=jwt_data.uuid,
+                        message=f"Ticket reopened by {jwt_data.name}",
+                        message_type=MessageType.SYSTEM,
+                    )
+                else:
+                    return json(
+                        {
+                            "error": "Bad Request",
+                            "message": "Nothing to update. The ticket is already in the requested status",
+                        },
+                        status=400,
+                    )
             elif resolution:
-                await executor.update_ticket_resolution(ticket_id, resolution)
+                await ticket_executor.update_ticket_resolution(
+                    ticket_id, resolution, jwt_data.name
+                )
             else:
                 return json(
                     {

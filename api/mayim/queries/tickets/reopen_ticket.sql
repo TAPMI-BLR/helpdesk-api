@@ -1,6 +1,7 @@
 UPDATE
     tickets
 SET
-    resolution_status = $resolution
+    ticket_status = 'OPEN',
+    closed_at = NULL
 WHERE
     id = $ticket_id;

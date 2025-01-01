@@ -1,3 +1,4 @@
+from uuid import UUID
 from mayim import Mayim
 from mayim.exception import RecordNotFound
 from sanic import Request, json
@@ -23,7 +24,7 @@ class TicketMessages(HTTPMethodView):
         self,
         request: Request,
         jwt_data: JWT_Data,
-        ticket_id: int,
+        ticket_id: UUID,
         query: MessageQueryParams,
     ):
         # Get query params
@@ -94,7 +95,7 @@ class TicketMessages(HTTPMethodView):
     @require_login()
     @require_role(required_role="user", allow_higher=True)
     async def post(
-        self, request: Request, jwt_data: JWT_Data, ticket_id: int, form: MessageForm
+        self, request: Request, jwt_data: JWT_Data, ticket_id: UUID, form: MessageForm
     ):
         # Get executors
         ticket_executor = Mayim.get(TicketExecutor)
