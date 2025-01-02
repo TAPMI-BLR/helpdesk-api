@@ -89,3 +89,6 @@ class TicketExecutor(PostgresExecutor):
 
     async def reopen_ticket(self, ticket_id: UUID) -> None:
         """Reopen a closed ticket"""
+
+    async def update_ticket_assignee(self, ticket_id: UUID, assignee_id: int) -> Ticket:
+        """Update a ticket's assignee"""
