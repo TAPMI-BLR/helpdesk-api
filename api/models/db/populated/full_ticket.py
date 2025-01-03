@@ -27,7 +27,7 @@ class FullTicket(BaseModel):
         return {
             "id": str(self.id),
             "title": self.title,
-            "user": self.user.to_dict(),
+            "user": self.user.to_dict(hide_data=True),
             "subcategory": self.subcategory.to_dict(),
             "assignee": self.assignee.to_dict(),
             "severity": self.severity.to_dict(),
