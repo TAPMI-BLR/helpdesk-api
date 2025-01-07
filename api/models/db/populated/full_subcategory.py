@@ -5,14 +5,15 @@ from pydantic import BaseModel
 from api.models.db.category import Category
 
 
-class SubCategory(BaseModel):
+class FullSubCategory(BaseModel):
     id: UUID
+    category_id: UUID
     category: Category
     name: str
 
     def to_dict(self):
         return {
             "id": str(self.id),
-            "category_id": self.category.to_dict(),
+            "category": self.category.to_dict(),
             "name": self.name,
         }

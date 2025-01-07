@@ -9,7 +9,12 @@ SELECT
         'is_team', (st.email IS NOT NULL),
         'is_sys_admin', st.is_sys_admin IS TRUE
     ) AS user,
-    row_to_json(sc.*) AS subcategory,
+    json_build_object(
+        'id', sc.id,
+        'name', sc.name,
+        'category_id', sc.category_id,
+        'category', row_to_json(c.*)
+    ) as subcategory,
     json_build_object(
         'id', a.id,
         'name', a.name,
@@ -29,6 +34,8 @@ FROM
 JOIN
     SubCategories sc ON t.subcategory_id = sc.id
 JOIN
+    Categories c ON sc.category_id = c.id
+JOIN
     Severity sev ON t.severity_id = sev.id
 JOIN
     SLA sla ON t.sla_id = sla.id
@@ -40,5 +47,3 @@ LEFT JOIN
     Staff sa ON t.assignee_id = sa.id
 LEFT JOIN
     Users a ON sa.email = a.email
-WHERE
-    t.id = $ticket_id

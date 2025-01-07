@@ -1,5 +1,6 @@
 from uuid import UUID
 from mayim import PostgresExecutor
+from typing import Union
 
 from api.models.db.config import Config
 from api.models.db.populated.full_ticket import FullTicket
@@ -12,14 +13,61 @@ class TicketExecutor(PostgresExecutor):
     path = "./queries/tickets/"
     limit_page_filter = " LIMIT $limit OFFSET $offset"
 
-    async def get_full_ticket_by_id(self, ticket_id: UUID) -> FullTicket:
-        """Get a full ticket by its ID"""
+    async def get_ticket_by_id(
+        self, ticket_id: UUID, require_full: bool = False
+    ) -> Union[Ticket, FullTicket]:
+        """Get a ticket by its ID"""
+        if require_full:
+            fragment = self.get_query("fragment_get_full_ticket").text
+            model = FullTicket
+        else:
+            fragment = self.get_query("fragment_get_ticket").text
+            model = Ticket
+        id_filter = " WHERE t.id = $ticket_id"
+        query = fragment + id_filter
+        return await self.execute(query, model=model, params={"ticket_id": ticket_id})
+
+    async def get_tickets_as_team(
+        self,
+        limit: int = 10,
+        offset: int = 0,
+        show_closed: bool = False,
+        require_full: bool = False,
+    ) -> list[Union[Ticket, FullTicket]]:
+        """Get tickets as a team member"""
+        if require_full:
+            fragment = self.get_query("fragment_get_full_ticket").text
+            model = FullTicket
+        else:
+            fragment = self.get_query("fragment_get_ticket").text
+            model = Ticket
+        status_filter = ""
+        if not show_closed:
+            status_filter = " AND ticket_status = 'OPEN'"
+        query = fragment + status_filter + self.limit_page_filter
+
+        return await self.execute(
+            query,
+            model=model,
+            params={"limit": limit, "offset": offset},
+            as_list=True,
+        )
 
     async def get_tickets_as_user(
-        self, user_id: int, limit: int = 10, offset: int = 0, show_closed: bool = False
-    ) -> list[Ticket]:
+        self,
+        user_id: int,
+        limit: int = 10,
+        offset: int = 0,
+        show_closed: bool = False,
+        require_full: bool = False,
+    ) -> list[Union[Ticket, FullTicket]]:
         """Get all tickets for a user"""
-        fragment = self.get_query("fragment_get_ticket").text
+        if require_full:
+            fragment = self.get_query("fragment_get_full_ticket").text
+            model = FullTicket
+        else:
+            fragment = self.get_query("fragment_get_ticket").text
+            model = Ticket
         user_filter = " WHERE user_id = $user_id"
         status_filter = ""
         if not show_closed:
@@ -28,36 +76,12 @@ class TicketExecutor(PostgresExecutor):
 
         return await self.execute(
             query,
-            model=Ticket,
+            model=model,
             params={
                 "user_id": user_id,
                 "limit": limit,
                 "offset": offset,
             },
-            as_list=True,
-        )
-
-    async def get_ticket_by_id(self, ticket_id: UUID) -> Ticket:
-        """Get a ticket by its ID"""
-        fragment = self.get_query("fragment_get_ticket").text
-        id_filter = " WHERE id = $ticket_id"
-        query = fragment + id_filter
-        return await self.execute(query, model=Ticket, params={"ticket_id": ticket_id})
-
-    async def get_tickets_as_team(
-        self, limit: int = 10, offset: int = 0, show_closed: bool = False
-    ) -> list[Ticket]:
-        """Get tickets as a team member"""
-        fragment = self.get_query("fragment_get_ticket").text
-        status_filter = ""
-        if not show_closed:
-            status_filter = " AND ticket_status = 'OPEN'"
-        query = fragment + status_filter + self.limit_page_filter
-
-        return await self.execute(
-            query,
-            model=Ticket,
-            params={"limit": limit, "offset": offset},
             as_list=True,
         )
 

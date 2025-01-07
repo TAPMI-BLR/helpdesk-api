@@ -21,7 +21,7 @@ class TicketInfo(HTTPMethodView):
     async def get(self, request: Request, jwt_data: JWT_Data, ticket_id: UUID):
         executor = Mayim.get(TicketExecutor)
         try:
-            ticket = await executor.get_full_ticket_by_id(ticket_id)
+            ticket = await executor.get_ticket_by_id(ticket_id, require_full=True)
         except RecordNotFound:
             return json(
                 {"error": "Not Found", "message": "The requested ticket was not found"},
@@ -57,7 +57,9 @@ class TicketInfo(HTTPMethodView):
         user_executor = Mayim.get(UserExecutor)
         message_executor = Mayim.get(MessageExecutor)
         try:
-            ticket = await ticket_executor.get_full_ticket_by_id(ticket_id)
+            ticket = await ticket_executor.get_ticket_by_id(
+                ticket_id, require_full=True
+            )
         except RecordNotFound:
             return json(
                 {"error": "Not Found", "message": "The requested ticket was not found"},

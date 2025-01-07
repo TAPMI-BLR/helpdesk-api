@@ -3,9 +3,9 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from api.models.db.populated.full_subcategory import FullSubCategory
 from api.models.db.severity import Severity
 from api.models.db.sla import SLA
-from api.models.db.subcategory import SubCategory
 from api.models.db.user import User
 from api.models.enums import TicketResolution, TicketStatus
 
@@ -14,7 +14,7 @@ class FullTicket(BaseModel):
     id: UUID
     title: str
     user: User
-    subcategory: SubCategory
+    subcategory: FullSubCategory
     assignee: User
     severity: Severity
     sla: SLA
@@ -29,7 +29,7 @@ class FullTicket(BaseModel):
             "title": self.title,
             "user": self.user.to_dict(hide_data=True),
             "subcategory": self.subcategory.to_dict(),
-            "assignee": self.assignee.to_dict(),
+            "assignee": self.assignee.to_dict(hide_data=True),
             "severity": self.severity.to_dict(),
             "sla": self.sla.to_dict(),
             "created_at": str(self.created_at),

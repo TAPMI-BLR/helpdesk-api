@@ -40,6 +40,7 @@ class TicketRoot(HTTPMethodView):
                 user_id=jwt_data.uuid,
                 offset=offset,
                 show_closed=query.show_closed,
+                require_full=query.all_info,
             )
         else:
             # Check if user has role of team or sys_admin in jwt_data.roles list
@@ -49,6 +50,7 @@ class TicketRoot(HTTPMethodView):
                     offset=offset,
                     limit=limit,
                     show_closed=query.show_closed,
+                    require_full=query.all_info,
                 )
             else:
                 return json(

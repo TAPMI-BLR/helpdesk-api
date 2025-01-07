@@ -6,3 +6,4 @@ class TicketsQuery(BaseModel):
     page: int = 0
     show_closed: bool = False
     as_user: bool = True
+    all_info: bool = True
