@@ -26,7 +26,7 @@ class CategoriesManage(HTTPMethodView):
 
         return json({"sub_categories": sub_categories})
 
-    @validate(form=CategoryForm)
+    @validate(form=CategoryForm, body_argument="form")
     @require_login()
     @require_role(required_role="sys_admin", allow_higher=True)
     async def post(
@@ -37,7 +37,7 @@ class CategoriesManage(HTTPMethodView):
         form: CategoryForm,
     ):
         category_executor = Mayim.get(CategoryExecutor)
-        sub_category_name = request.json.get(CategoryForm)
+        sub_category_name = form.name
 
         # Check if sub_category_name is empty
         if not sub_category_name:
@@ -53,7 +53,8 @@ class CategoriesManage(HTTPMethodView):
             parent_id=category_id
         )
         if any(
-            sub_cat.name == sub_category_name for sub_cat in existing_sub_categories
+            sub_cat.name.lower() == sub_category_name.lower()
+            for sub_cat in existing_sub_categories
         ):
             return json({"error": "Subcategory already exists"}, status=409)
 

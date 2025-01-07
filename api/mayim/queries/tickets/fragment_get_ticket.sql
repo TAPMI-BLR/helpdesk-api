@@ -1,2 +1,2 @@
 SELECT *
-FROM tickets
+FROM tickets t

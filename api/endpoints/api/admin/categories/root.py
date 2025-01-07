@@ -25,7 +25,7 @@ class CategoriesRoot(HTTPMethodView):
 
         return json({"categories": categories})
 
-    @validate(form=CategoryForm)
+    @validate(form=CategoryForm, body_argument="form")
     @require_login()
     @require_role(required_role="sys_admin", allow_higher=True)
     async def post(
@@ -35,7 +35,7 @@ class CategoriesRoot(HTTPMethodView):
         form: CategoryForm,
     ):
         category_executor = Mayim.get(CategoryExecutor)
-        category_name = request.json.get(CategoryForm)
+        category_name = form.name
 
         # Check if category_name is empty
         if not category_name:
@@ -43,7 +43,9 @@ class CategoriesRoot(HTTPMethodView):
 
         # Check for duplicate category
         existing_categories = await category_executor.get_categories()
-        if any(cat.name == category_name for cat in existing_categories):
+        if any(
+            cat.name.lower() == category_name.lower() for cat in existing_categories
+        ):
             return json({"error": "Category already exists"}, status=409)
 
         category = await category_executor.create_category(name=category_name)
