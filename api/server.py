@@ -7,6 +7,7 @@ from os import getenv
 from api.app import HelpDesk, appserver
 from api.mayim.category_executor import CategoryExecutor
 from api.mayim.message_executor import MessageExecutor
+from api.mayim.severity_executor import SeverityExecutor
 from api.mayim.system_executor import SystemExecutor
 from api.mayim.ticket_executor import TicketExecutor
 from api.mayim.user_executor import UserExecutor
@@ -82,6 +83,7 @@ Extend.register(
             SystemExecutor,
             SLAExecutor,
             TeamExecutor,
+            SeverityExecutor,
         ],
         dsn=f"postgres://{config['DB_USERNAME']}:{config['DB_PASSWORD']}@{config['DB_HOST']}:{config['DB_PORT']}/{config['DB_NAME']}",  # noqa: E501
     )
