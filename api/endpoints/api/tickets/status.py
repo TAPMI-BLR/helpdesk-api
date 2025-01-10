@@ -11,7 +11,11 @@ from api.mayim.message_executor import MessageExecutor
 from api.mayim.ticket_executor import TicketExecutor
 from api.models.internal.jwt_data import JWT_Data
 from api.models.requests.ticket_status_form import TicketStatusForm
-from api.models.enums import MessageType, TicketStatus as TicketStatusEnum
+from api.models.enums import (
+    MessageType,
+    TicketResolution,
+    TicketStatus as TicketStatusEnum,
+)
 
 
 class TicketStatus(HTTPMethodView):
@@ -117,9 +121,40 @@ class TicketStatus(HTTPMethodView):
                         status=400,
                     )
             elif resolution:
-                await ticket_executor.update_ticket_resolution(
-                    ticket_id, resolution, jwt_data.name
-                )
+                if (
+                    resolution == TicketResolution.RESOLVED
+                    and ticket.resolution_status == TicketResolution.UNRESOLVED
+                ):
+                    await ticket_executor.update_ticket_resolution(
+                        ticket_id=ticket_id, resolution=TicketResolution.RESOLVED
+                    )
+                    await message_executor.create_text_message(
+                        ticket_id,
+                        user_id=jwt_data.uuid,
+                        message=f"Ticket marked as resolved by {jwt_data.name}",
+                        message_type=MessageType.SYSTEM,
+                    )
+                elif (
+                    resolution == TicketResolution.UNRESOLVED
+                    and ticket.resolution_status == TicketResolution.RESOLVED
+                ):
+                    await ticket_executor.update_ticket_resolution(
+                        ticket_id=ticket_id, resolution=TicketResolution.UNRESOLVED
+                    )
+                    await message_executor.create_text_message(
+                        ticket_id,
+                        user_id=jwt_data.uuid,
+                        message=f"Ticket marked as unresolved by {jwt_data.name}",
+                        message_type=MessageType.SYSTEM,
+                    )
+                else:
+                    return json(
+                        {
+                            "error": "Bad Request",
+                            "message": "Nothing to update. The ticket is already in the requested status",
+                        },
+                        status=400,
+                    )
             else:
                 return json(
                     {

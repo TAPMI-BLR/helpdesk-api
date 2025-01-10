@@ -104,8 +104,8 @@ class TicketExecutor(PostgresExecutor):
         return self.hydrator.hydrate(r, Ticket)
 
     async def update_ticket_resolution(
-        self, ticket_id: UUID, resolution: TicketResolution, name_of_updater: str
-    ) -> Ticket:
+        self, ticket_id: UUID, resolution: TicketResolution
+    ) -> None:
         """Update a ticket's resolution"""
 
     async def close_ticket(self, ticket_id: UUID) -> None:
