@@ -6,7 +6,7 @@ SELECT
         'name', u.name,
         'email', u.email,
         'data', u.data,
-        'is_team', (st.email IS NOT NULL),
+        'is_team', (st.id IS NOT NULL),
         'is_sys_admin', st.is_sys_admin IS TRUE
     ) AS user,
     json_build_object(
@@ -20,7 +20,7 @@ SELECT
         'name', a.name,
         'email', a.email,
         'data', a.data,
-        'is_team', (sa.email IS NOT NULL),
+        'is_team', (sa.id IS NOT NULL),
         'is_sys_admin', sa.is_sys_admin IS TRUE
     ) AS assignee,
     row_to_json(sev.*) AS severity,
@@ -42,8 +42,8 @@ JOIN
 LEFT JOIN
     Users u ON t.user_id = u.id
 LEFT JOIN
-    Staff st ON u.email = st.email
+    Staff st ON u.id = st.id
 LEFT JOIN
     Staff sa ON t.assignee_id = sa.id
 LEFT JOIN
-    Users a ON sa.email = a.email
+    Users a ON sa.id = a.id
