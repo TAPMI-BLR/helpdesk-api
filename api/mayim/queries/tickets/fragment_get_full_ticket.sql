@@ -7,7 +7,8 @@ SELECT
         'email', u.email,
         'data', u.data,
         'is_team', (st.id IS NOT NULL),
-        'is_sys_admin', st.is_sys_admin IS TRUE
+        'is_sys_admin', st.is_sys_admin IS TRUE,
+        'is_disabled', COALESCE(st.is_disabled, false)
     ) AS user,
     json_build_object(
         'id', sc.id,
@@ -21,7 +22,8 @@ SELECT
         'email', a.email,
         'data', a.data,
         'is_team', (sa.id IS NOT NULL),
-        'is_sys_admin', sa.is_sys_admin IS TRUE
+        'is_sys_admin', sa.is_sys_admin IS TRUE,
+        'is_disabled', COALESCE(sa.is_disabled, false)
     ) AS assignee,
     row_to_json(sev.*) AS severity,
     row_to_json(sla.*) AS sla,

@@ -1,4 +1,5 @@
 from json import dumps
+from uuid import UUID
 
 from mayim import PostgresExecutor
 
@@ -23,3 +24,12 @@ class UserExecutor(PostgresExecutor):
             params={"name": name, "email": email, "data": dumps(data)},
             no_result=True,
         )
+
+    async def create_staff(self, user_id: UUID, is_sys_admin: bool = False):
+        """Create a staff member"""
+
+    async def get_all_staff(self) -> list[User]:
+        """Get all staff members"""
+
+    async def get_active_staff(self) -> list[User]:
+        """Get all staff members"""

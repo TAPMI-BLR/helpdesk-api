@@ -4,6 +4,7 @@ from .api.admin.categories.manage import CategoriesManage
 from .api.admin.categories.root import CategoriesRoot
 from .api.admin.sla.manage import SLAManage
 from .api.admin.sla.root import SLARoot
+from .api.admin.staff import StaffRoot
 from .api.admin.teams.manage import TeamManage
 from .api.admin.teams.root import TeamRoot
 from .api.auth.callback import AuthCallback
@@ -14,6 +15,7 @@ from .api.me.root import MeRoot
 from .api.options.category import CategoryOptions
 from .api.options.severity import SeverityOptions
 from .api.options.sla import SLAOptions
+from .api.options.staff import StaffOptions
 from .api.ping import Ping
 from .api.tickets.info import TicketInfo
 from .api.tickets.messages import TicketMessages
@@ -41,3 +43,5 @@ appserver.add_route(TicketInfo.as_view(), "/api/tickets/<ticket_id:uuid>")
 appserver.add_route(TicketRoot.as_view(), "/api/tickets")
 appserver.add_route(TicketMessages.as_view(), "/api/tickets/<ticket_id:uuid>/messages")
 appserver.add_route(TicketStatus.as_view(), "/api/tickets/<ticket_id:uuid>/status")
+appserver.add_route(StaffRoot.as_view(), "/api/admin/staff")
+appserver.add_route(StaffOptions.as_view(), "/api/options/staff")
