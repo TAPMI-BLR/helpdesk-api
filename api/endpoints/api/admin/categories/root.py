@@ -48,11 +48,15 @@ class CategoriesRoot(HTTPMethodView):
         ):
             return json({"error": "Category already exists"}, status=409)
 
-        category = await category_executor.create_category(name=category_name)
+        try:
+            await category_executor.create_category(name=category_name)
+        except Exception as e:
+            return json({"status": "failure", "error": str(e)}, status=500)
+
         return json(
             {
+                "status": "success",
                 "message": "Category added successfully",
-                "Category": category.to_dict(),
             },
             status=201,
         )

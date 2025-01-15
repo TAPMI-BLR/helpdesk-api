@@ -1,2 +1,2 @@
-INSERT INTO categories ('name')
+INSERT INTO categories (name)
 VALUES ($name);

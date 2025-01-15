@@ -44,7 +44,9 @@ class CategoriesManage(HTTPMethodView):
             return json({"error": "Subcategory name cannot be empty"}, status=400)
 
         # Check if parent category exists
-        parent_category = await category_executor.get_categories(category_id)
+        parent_category = await category_executor.get_category_by_id(
+            category_id=category_id
+        )
         if not parent_category:
             return json({"error": "Parent category does not exist"}, status=404)
 
@@ -58,13 +60,16 @@ class CategoriesManage(HTTPMethodView):
         ):
             return json({"error": "Subcategory already exists"}, status=409)
 
-        sub_category = await category_executor.create_subcategory(
-            parent_id=category_id, name=sub_category_name
-        )
+        try:
+            await category_executor.create_subcategory(
+                parent_id=category_id, name=sub_category_name
+            )
+        except Exception as e:
+            return json({"status": "failure", "error": str(e)}, status=500)
         return json(
             {
+                "status": "success",
                 "message": "Subcategory added successfully",
-                "sub_category": sub_category.to_dict(),
             },
             status=201,
         )
