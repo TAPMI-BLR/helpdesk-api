@@ -4,6 +4,8 @@ from .api.admin.categories.manage import CategoriesManage
 from .api.admin.categories.root import CategoriesRoot
 from .api.admin.sla.manage import SLAManage
 from .api.admin.sla.root import SLARoot
+from .api.admin.severity.root import SeverityRoot
+from .api.admin.severity.manage import SeverityManage
 from .api.admin.staff import StaffRoot
 from .api.admin.teams.manage import TeamManage
 from .api.admin.teams.root import TeamRoot
@@ -45,3 +47,7 @@ appserver.add_route(TicketMessages.as_view(), "/api/tickets/<ticket_id:uuid>/mes
 appserver.add_route(TicketStatus.as_view(), "/api/tickets/<ticket_id:uuid>/status")
 appserver.add_route(StaffRoot.as_view(), "/api/admin/staff")
 appserver.add_route(StaffOptions.as_view(), "/api/options/staff")
+appserver.add_route(SeverityRoot.as_view(), "/api/admin/severity")
+appserver.add_route(
+    SeverityManage.as_view(), "/api/admin/severity/<severity_id:uuid>/manage"
+)
