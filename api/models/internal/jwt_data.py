@@ -28,7 +28,7 @@ class JWT_Data:
         }
 
     def is_admin(self) -> bool:
-        return "admin" in self.roles
+        return "sys_admin" in self.roles
 
     def is_support(self) -> bool:
         return "team" in self.roles
