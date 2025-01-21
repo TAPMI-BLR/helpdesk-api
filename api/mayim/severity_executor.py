@@ -17,5 +17,5 @@ class SeverityExecutor(PostgresExecutor):
     async def get_severity_by_id(self, severity_id: UUID) -> Severity:
         """Get an Severity Level by its ID"""
 
-    async def create_severity(self, name: str, level: int, note: str):
+    async def create_severity(self, name: str, level: int, note: str, colour: str):
         """Create an Severity Level"""

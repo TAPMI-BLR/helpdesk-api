@@ -1,2 +1,2 @@
-INSERT INTO severity (name, level, note)
-VALUES ($name, $level, $note);
+INSERT INTO severity (name, level, note, colour)
+VALUES ($name, $level, $note, $colour);

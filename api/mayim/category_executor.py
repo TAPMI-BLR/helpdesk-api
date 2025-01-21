@@ -21,8 +21,8 @@ class CategoryExecutor(PostgresExecutor):
     async def get_subcategory_by_id(self, subcategory_id: UUID) -> SubCategory:
         """Get a subcategory by its ID"""
 
-    async def create_category(self, name: str):
+    async def create_category(self, name: str, colour: str):
         """Create a category"""
 
-    async def create_subcategory(self, name: str, parent_id: UUID):
+    async def create_subcategory(self, name: str, parent_id: UUID, colour: str):
         """Create a subcategory"""
