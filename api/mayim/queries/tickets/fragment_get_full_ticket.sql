@@ -14,7 +14,8 @@ SELECT
         'id', sc.id,
         'name', sc.name,
         'category_id', sc.category_id,
-        'category', row_to_json(c.*)
+        'category', row_to_json(c.*),
+        'colour', sc.colour
     ) as subcategory,
     json_build_object(
         'id', a.id,

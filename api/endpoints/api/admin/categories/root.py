@@ -49,7 +49,9 @@ class CategoriesRoot(HTTPMethodView):
             return json({"error": "Category already exists"}, status=409)
 
         try:
-            await category_executor.create_category(name=category_name)
+            await category_executor.create_category(
+                name=category_name, colour=form.colour.as_hex()
+            )
         except Exception as e:
             return json({"status": "failure", "error": str(e)}, status=500)
 

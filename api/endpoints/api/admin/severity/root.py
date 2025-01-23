@@ -34,7 +34,10 @@ class SeverityRoot(HTTPMethodView):
                 )
         try:
             await executor.create_severity(
-                name=form.name, level=form.level, note=form.note
+                name=form.name,
+                level=form.level,
+                note=form.note,
+                colour=form.colour.as_hex(),
             )
         except Exception as e:
             return json({"status": "failure", "error": str(e)}, status=400)

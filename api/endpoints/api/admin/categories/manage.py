@@ -62,7 +62,9 @@ class CategoriesManage(HTTPMethodView):
 
         try:
             await category_executor.create_subcategory(
-                parent_id=category_id, name=sub_category_name
+                parent_id=category_id,
+                name=sub_category_name,
+                colour=form.colour.as_hex(),
             )
         except Exception as e:
             return json({"status": "failure", "error": str(e)}, status=500)
