@@ -13,6 +13,7 @@ from api.mayim.ticket_executor import TicketExecutor
 from api.mayim.user_executor import UserExecutor
 from api.mayim.sla_executor import SLAExecutor
 from api.mayim.team_executor import TeamExecutor
+from api.mayim.statistics_executor import StatisticsExecutor
 
 from . import endpoints  # noqa: F401
 
@@ -45,7 +46,7 @@ config.update(
         "AZURE_AD_REDIRECT_URI": getenv(
             "AZURE_AD_REDIRECT_URI", "http://localhost:8000/api/login/callback"
         ),
-        "AZURE_AD_DOMAIN_HINT": getenv("AZURE_AD_DOMAIN_HINT", None),
+        "AZURE_AD_DOMAIN_HINT": getenv("AZURE_AD_DOMAIN_HINT", "manipal.edu"),
         "AZURE_AD_PROMPT": getenv("AZURE_AD_PROMPT", "select_account"),
     }
 )
@@ -84,6 +85,7 @@ Extend.register(
             SLAExecutor,
             TeamExecutor,
             SeverityExecutor,
+            StatisticsExecutor,
         ],
         dsn=f"postgres://{config['DB_USERNAME']}:{config['DB_PASSWORD']}@{config['DB_HOST']}:{config['DB_PORT']}/{config['DB_NAME']}",  # noqa: E501
     )

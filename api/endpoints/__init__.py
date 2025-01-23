@@ -21,6 +21,10 @@ from .api.tickets.info import TicketInfo
 from .api.tickets.messages import TicketMessages
 from .api.tickets.root import TicketRoot
 from .api.tickets.status import TicketStatus
+from .api.admin.statistics.category import CategoriesCount
+from .api.admin.statistics.subcategory import SubcategoriesCount
+from .api.admin.statistics.resolution_status import ResolutionStatusCount
+from .api.admin.statistics.ticket_status import TicketStatusCount
 
 appserver.add_route(
     CategoriesManage.as_view(), "/api/admin/categories/<category_id:uuid>/manage"
@@ -45,3 +49,11 @@ appserver.add_route(TicketMessages.as_view(), "/api/tickets/<ticket_id:uuid>/mes
 appserver.add_route(TicketStatus.as_view(), "/api/tickets/<ticket_id:uuid>/status")
 appserver.add_route(StaffRoot.as_view(), "/api/admin/staff")
 appserver.add_route(StaffOptions.as_view(), "/api/options/staff")
+appserver.add_route(CategoriesCount.as_view(), "/api/admin/statistics/category")
+appserver.add_route(
+    SubcategoriesCount.as_view(), "/api/admin/statistics/<category_id:uuid>/subcategory"
+)
+appserver.add_route(
+    ResolutionStatusCount.as_view(), "/api/admin/statistics/resolution_status"
+)
+appserver.add_route(TicketStatusCount.as_view(), "/api/admin/statistics/ticket_status")
