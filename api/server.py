@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from mayim import Mayim
 from mayim.extension import SanicMayimExtension
 from sanic.log import logger
 from sanic_ext import Extend
@@ -93,7 +94,18 @@ Extend.register(
 @app.listener("before_server_start")
 async def setup_app(app: HelpDesk):
     await app.load_entra_jwks()
-    logger.info("Setup complete.")
+    logger.info("Loaded Entra Keys")
+
+
+@app.listener("after_server_start")
+async def setup_db(app: HelpDesk):
+    # Setup the database functions used in deletion
+    executor = Mayim.get(SystemExecutor)
+    await executor.func_setup_migrate_category()
+    await executor.func_setup_migrate_subcategory()
+    await executor.func_setup_migrate_sla()
+    await executor.func_setup_migrate_severity()
+    logger.info("Setup Database Functions")
 
 
 if __name__ == "__main__":

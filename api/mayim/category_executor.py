@@ -26,3 +26,13 @@ class CategoryExecutor(PostgresExecutor):
 
     async def create_subcategory(self, name: str, parent_id: UUID, colour: str):
         """Create a subcategory"""
+
+    async def delete_category(
+        self, original_id: UUID, replacement_id: UUID, user_id: UUID
+    ):
+        """Delete a category"""
+
+    async def delete_subcategory(
+        self, original_id: UUID, replacement_id: UUID, user_id: UUID
+    ):
+        """Delete a subcategory"""

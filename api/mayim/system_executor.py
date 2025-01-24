@@ -18,3 +18,15 @@ class SystemExecutor(PostgresExecutor):
 
     async def get_default_ticket_config(self) -> Config:
         """Get default ticket configuration"""
+
+    async def func_setup_migrate_category(self):
+        """Setup the migrate category function used in deletion"""
+
+    async def func_setup_migrate_subcategory(self):
+        """Setup the migrate subcategory function used in deletion"""
+
+    async def func_setup_migrate_sla(self):
+        """Setup the migrate sla function used in deletion"""
+
+    async def func_setup_migrate_severity(self):
+        """Setup the migrate severity function used in deletion"""

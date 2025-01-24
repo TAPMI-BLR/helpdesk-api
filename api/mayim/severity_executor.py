@@ -19,3 +19,8 @@ class SeverityExecutor(PostgresExecutor):
 
     async def create_severity(self, name: str, level: int, note: str, colour: str):
         """Create an Severity Level"""
+
+    async def delete_severity(
+        self, original_id: UUID, replacement_id: UUID, user_id: UUID
+    ):
+        """Delete an Severity Level"""
