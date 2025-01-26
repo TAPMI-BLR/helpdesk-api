@@ -4,6 +4,8 @@ from .api.admin.categories.manage import CategoriesManage
 from .api.admin.categories.root import CategoriesRoot
 from .api.admin.sla.manage import SLAManage
 from .api.admin.sla.root import SLARoot
+from .api.admin.severity.root import SeverityRoot
+from .api.admin.severity.manage import SeverityManage
 from .api.admin.staff import StaffRoot
 from .api.admin.teams.manage import TeamManage
 from .api.admin.teams.root import TeamRoot
@@ -57,3 +59,7 @@ appserver.add_route(
     ResolutionStatusCount.as_view(), "/api/admin/statistics/resolution_status"
 )
 appserver.add_route(TicketStatusCount.as_view(), "/api/admin/statistics/ticket_status")
+appserver.add_route(SeverityRoot.as_view(), "/api/admin/severity")
+appserver.add_route(
+    SeverityManage.as_view(), "/api/admin/severity/<severity_id:uuid>/manage"
+)

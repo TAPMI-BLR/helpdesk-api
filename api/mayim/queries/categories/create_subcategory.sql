@@ -1,2 +1,2 @@
-INSERT INTO subcategories ('category_id', 'name')
-VALUES ($parent_id, $name);
+INSERT INTO subcategories (category_id, name, colour)
+VALUES ($parent_id, $name, $colour);

@@ -14,7 +14,8 @@ SELECT
         'id', sc.id,
         'name', sc.name,
         'category_id', sc.category_id,
-        'category', row_to_json(c.*)
+        'category', row_to_json(c.*),
+        'colour', sc.colour
     ) as subcategory,
     json_build_object(
         'id', a.id,
@@ -41,11 +42,11 @@ JOIN
     Severity sev ON t.severity_id = sev.id
 JOIN
     SLA sla ON t.sla_id = sla.id
-LEFT JOIN
+JOIN
     Users u ON t.user_id = u.id
-LEFT JOIN
+JOIN
     Staff st ON u.id = st.id
-LEFT JOIN
+JOIN
     Staff sa ON t.assignee_id = sa.id
-LEFT JOIN
+JOIN
     Users a ON sa.id = a.id

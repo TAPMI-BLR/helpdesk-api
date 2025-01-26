@@ -6,35 +6,40 @@ from mayim.exception import RecordNotFound
 
 from api.decorators.require_login import require_login
 from api.decorators.require_role import require_role
-from api.mayim.sla_executor import SLAExecutor
+from api.mayim.severity_executor import SeverityExecutor
 from api.models.internal.jwt_data import JWT_Data
 from api.models.requests.deletion_post import DeletionPost
-from api.models.requests.sla_post import SLAPost
+from api.models.requests.severity_post import SeverityPost
 
 
-class SLARoot(HTTPMethodView):
+class SeverityRoot(HTTPMethodView):
     @require_login()
     @require_role(required_role="user", allow_higher=True)
     async def get(self, request: Request, jwt_data: JWT_Data):
-        executor = Mayim.get(SLAExecutor)
-        slas = await executor.get_all_slas()
-        slas = [sla.to_dict() for sla in slas]
+        executor = Mayim.get(SeverityExecutor)
+        severity_levels = await executor.get_all_severity_levels()
+        levels = [level.to_dict() for level in severity_levels]
 
-        return json({"slas": slas})
+        return json({"severity": levels})
 
-    @validate(form=SLAPost, body_argument="form")
+    @validate(form=SeverityPost, body_argument="form")
     @require_login()
     @require_role(required_role="sys_admin", allow_higher=True)
-    async def post(self, request: Request, jwt_data: JWT_Data, form: SLAPost):
-        executor = Mayim.get(SLAExecutor)
+    async def post(self, request: Request, jwt_data: JWT_Data, form: SeverityPost):
+        executor = Mayim.get(SeverityExecutor)
 
-        slas = await executor.get_all_slas()
-        for sla in slas:
-            if sla.name == form.name:
-                return json({"error": "SLA with this name already exists"}, status=400)
+        severity_levels = await executor.get_all_severity_levels()
+        for level in severity_levels:
+            if level.name == form.name:
+                return json(
+                    {"error": "Severity with this name already exists"}, status=400
+                )
         try:
-            await executor.create_sla(
-                name=form.name, time_limit=form.time_limit, note=form.note
+            await executor.create_severity(
+                name=form.name,
+                level=form.level,
+                note=form.note,
+                colour=form.colour.as_hex(),
             )
         except Exception as e:
             return json({"status": "failure", "error": str(e)}, status=400)
@@ -42,7 +47,7 @@ class SLARoot(HTTPMethodView):
         return json(
             {
                 "status": "success",
-                "message": "SLA added successfully",
+                "message": "Severity added successfully",
             },
             status=201,
         )
@@ -51,28 +56,30 @@ class SLARoot(HTTPMethodView):
     @require_login()
     @require_role(required_role="sys_admin", allow_higher=True)
     async def delete(self, request: Request, jwt_data: JWT_Data, form: DeletionPost):
-        executor = Mayim.get(SLAExecutor)
+        executor = Mayim.get(SeverityExecutor)
 
         # Check if both IDs are valid
         try:
-            await executor.get_sla_by_id(form.delete)
+            await executor.get_severity_by_id(form.delete)
         except RecordNotFound:
-            return json({"error": "SLA to delete does not exist"}, status=400)
+            return json({"error": "Severity to delete does not exist"}, status=400)
 
         try:
-            await executor.get_sla_by_id(form.replacement)
+            await executor.get_severity_by_id(form.replacement)
         except RecordNotFound:
-            return json({"error": "Replacement SLA does not exist"}, status=400)
+            return json({"error": "Replacement Severity does not exist"}, status=400)
 
         # Ensure that both IDs are not the same
         if form.delete == form.replacement:
             return json(
-                {"error": "Replacement SLA cannot be the same as the SLA to delete"},
+                {
+                    "error": "Replacement Severity cannot be the same as the Severity to delete"
+                },
                 status=400,
             )
 
         try:
-            await executor.delete_sla(
+            await executor.delete_severity(
                 original_id=form.delete,
                 replacement_id=form.replacement,
                 user_id=jwt_data.uuid,
@@ -83,7 +90,7 @@ class SLARoot(HTTPMethodView):
         return json(
             {
                 "status": "success",
-                "message": "SLA deleted successfully",
+                "message": "Severity deleted successfully",
             },
             status=200,
         )

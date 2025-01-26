@@ -114,5 +114,14 @@ class TicketExecutor(PostgresExecutor):
     async def reopen_ticket(self, ticket_id: UUID) -> None:
         """Reopen a closed ticket"""
 
-    async def update_ticket_assignee(self, ticket_id: UUID, assignee_id: int) -> Ticket:
+    async def update_ticket_assignee(self, ticket_id: UUID, assignee_id: UUID):
         """Update a ticket's assignee"""
+
+    async def update_ticket_severity(self, ticket_id: UUID, severity_id: UUID):
+        """Update a ticket's severity"""
+
+    async def update_ticket_sla(self, ticket_id: UUID, sla_id: UUID):
+        """Update a ticket's SLA"""
+
+    async def update_ticket_subcategory(self, ticket_id: UUID, subcategory_id: UUID):
+        """Update a ticket's subcategory"""
