@@ -23,7 +23,10 @@ class CategoryOptions(HTTPMethodView):
             options = await category_executor.get_subcategories(
                 parent_id=query.category_id
             )
+        elif query.show_children:
+            options = await category_executor.get_categories_with_children()
         else:
+
             options = await category_executor.get_categories()
 
         options = [option.to_dict() for option in options]

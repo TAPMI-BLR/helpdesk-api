@@ -20,7 +20,7 @@ class CategoriesRoot(HTTPMethodView):
         category_executor = Mayim.get(CategoryExecutor)
 
         # Fetch all categories
-        categories = await category_executor.get_categories()
+        categories = await category_executor.get_categories_with_children()
 
         # Convert categories to dictionary format
         categories = [category.to_dict() for category in categories]

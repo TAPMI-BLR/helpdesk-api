@@ -2,6 +2,7 @@ from uuid import UUID
 from mayim import PostgresExecutor
 
 from api.models.db.category import Category
+from api.models.db.populated.full_category import FullCategory
 from api.models.db.subcategory import SubCategory
 
 
@@ -14,6 +15,9 @@ class CategoryExecutor(PostgresExecutor):
 
     async def get_category_by_id(self, category_id: UUID) -> Category:
         """Get a category by its ID"""
+
+    async def get_categories_with_children(self) -> list[FullCategory]:
+        """Get all categories with their children"""
 
     async def get_subcategories(self, parent_id: UUID) -> list[SubCategory]:
         """Get all subcategories for a category"""
