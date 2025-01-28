@@ -49,6 +49,11 @@ config.update(
         ),
         "AZURE_AD_DOMAIN_HINT": getenv("AZURE_AD_DOMAIN_HINT", "manipal.edu"),
         "AZURE_AD_PROMPT": getenv("AZURE_AD_PROMPT", "select_account"),
+        "MINIO_ENDPOINT": getenv("MINIO_ENDPOINT", "minio"),
+        "MINIO_USERNAME": getenv("MINIO_USERNAME", "minio"),
+        "MINIO_PASSWORD": getenv("MINIO_PASSWORD", "minio"),
+        "MINIO_PUBLIC_ENDPOINT": getenv("MINIO_PUBLIC_ENDPOINT", None),
+        "MINIO_BUCKET": getenv("MINIO_BUCKET", "helpdesk"),
     }
 )
 
@@ -66,9 +71,10 @@ if any(
         "AZURE_AD_CLIENT_ID",
         "AZURE_AD_REDIRECT_URI",
         "AZURE_AD_DOMAIN_HINT",
+        "MINIO_PUBLIC_ENDPOINT",
     ]
 ):
-    logger.error("MISSING AZURE AD ENV VARIABLES")
+    logger.error("MISSING ENV VARIABLES")
     quit(1)
 
 app: HelpDesk = appserver
@@ -97,6 +103,8 @@ Extend.register(
 async def setup_app(app: HelpDesk):
     await app.load_entra_jwks()
     logger.info("Loaded Entra Keys")
+    await app.setup_minio()
+    logger.info("Setup Minio")
 
 
 @app.listener("after_server_start")

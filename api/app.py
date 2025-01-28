@@ -6,12 +6,15 @@ from api.models.internal.jwt_status import JWT_Status
 from datetime import datetime, timedelta, timezone
 from sanic import Sanic
 from sanic.log import logger
+from miniopy_async import Minio
 
 
 class HelpDesk(Sanic):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ctx.entra_public_keys = dict()
+        self.ctx.minio_client = None
+        self.ctx.minio_inject = None
 
     def get_entra_jwt_keys(self) -> dict:
         return self.ctx.entra_public_keys
@@ -100,6 +103,25 @@ class HelpDesk(Sanic):
         iss = f"HELPDESK_API_{self.config['HOST']}"
         data.update({"exp": expire, "iat": now, "nbf": now, "iss": iss})
         return jwt.encode(data, self.config["PRIV_KEY"], algorithm="RS256")
+
+    def get_minio_client(self) -> Minio:
+        return self.ctx.minio_client
+
+    def get_minio_inject(self, skip_host: bool = False) -> dict:
+        minio_inject = {"bucket_name": self.config["MINIO_BUCKET"]}
+
+        if "MINIO_CHANGE_HOST" in self.config and not skip_host:
+            minio_inject["change_host"] = self.config["MINIO_CHANGE_HOST"]
+
+        return minio_inject
+
+    async def setup_minio(self):
+        self.ctx.minio_client = Minio(
+            endpoint=self.config["MINIO_ENDPOINT"],
+            access_key=self.config["MINIO_USERNAME"],
+            secret_key=self.config["MINIO_PASSWORD"],
+            secure=True,
+        )
 
 
 appserver = HelpDesk("helpdesk")
