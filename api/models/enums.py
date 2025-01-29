@@ -20,3 +20,8 @@ class TicketStatus(str, Enum):
 class TicketResolution(str, Enum):
     RESOLVED = "RESOLVED"
     UNRESOLVED = "UNRESOLVED"
+
+
+class FileStorageType(str, Enum):
+    MINIO = "MINIO"
+    ONEDRIVE = "ONEDRIVE"
