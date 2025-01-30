@@ -44,7 +44,7 @@ JOIN
     SLA sla ON t.sla_id = sla.id
 JOIN
     Users u ON t.user_id = u.id
-JOIN
+LEFT JOIN
     Staff st ON u.id = st.id
 JOIN
     Staff sa ON t.assignee_id = sa.id
