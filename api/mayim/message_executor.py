@@ -17,11 +17,11 @@ class MessageExecutor(PostgresExecutor):
         """Get all messages for a ticket"""
 
     async def create_text_message(
-        self, ticket_id: UUID, user_id: int, message: str, message_type: MessageType
+        self, ticket_id: UUID, user_id: UUID, message: str, message_type: MessageType
     ):
         """Create a new chat message"""
 
     async def create_message_with_file_id(
-        self, ticket_id: UUID, user_id: int, file_id: int
+        self, ticket_id: UUID, user_id: UUID, file_id: UUID, message_type: MessageType
     ):
         """Create a message with a file attachment"""

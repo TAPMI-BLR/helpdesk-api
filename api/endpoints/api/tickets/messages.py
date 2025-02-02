@@ -1,16 +1,21 @@
 from uuid import UUID
+
 from mayim import Mayim
 from mayim.exception import RecordNotFound
 from sanic import Request, json
 from sanic.log import logger
+from sanic.request import File
 from sanic.views import HTTPMethodView
 from sanic_ext import validate
+from io import BytesIO
 
+from api.app import HelpDesk
 from api.decorators.require_login import require_login
 from api.decorators.require_role import require_role
+from api.mayim.file_executor import FileExecutor
 from api.mayim.message_executor import MessageExecutor
 from api.mayim.ticket_executor import TicketExecutor
-from api.models.enums import MessageType
+from api.models.enums import FileStorageType, MessageType
 from api.models.internal.jwt_data import JWT_Data
 from api.models.requests.message_form import MessageForm
 from api.models.requests.message_query_params import MessageQueryParams
@@ -95,11 +100,16 @@ class TicketMessages(HTTPMethodView):
     @require_login()
     @require_role(required_role="user", allow_higher=True)
     async def post(
-        self, request: Request, jwt_data: JWT_Data, ticket_id: UUID, form: MessageForm
+        self,
+        request: Request,
+        jwt_data: JWT_Data,
+        ticket_id: UUID,
+        form: MessageForm,
     ):
         # Get executors
         ticket_executor = Mayim.get(TicketExecutor)
         message_executor = Mayim.get(MessageExecutor)
+        file_executor = Mayim.get(FileExecutor)
 
         # Get Ticket by ID
         try:
@@ -129,29 +139,29 @@ class TicketMessages(HTTPMethodView):
 
         # Get message data
         message = form.content
-        file = form.file
+        files = request.files.getlist("files")
 
-        # Create message
-        if file:
+        # Get the App instance
+        app: HelpDesk = request.app
+
+        # Ensure that either a message or a file is provided
+        if not message and not files:
             return json(
                 {
-                    "error": "Not Implemented",
-                    "message": "File uploads are not supported yet.",
+                    "error": "Invalid parameters",
+                    "message": "Either a message or a file must be provided.",
                 },
-                501,
+                400,
             )
-        else:
+
+        # Create a text message
+        if message:
             try:
                 await message_executor.create_text_message(
-                    ticket_id, jwt_data.uuid, message, message_type
-                )
-            except RecordNotFound:
-                return json(
-                    {
-                        "error": "Ticket not found",
-                        "message": "The requested ticket does not exist.",
-                    },
-                    404,
+                    ticket_id=ticket_id,
+                    user_id=jwt_data.uuid,
+                    message=message,
+                    message_type=message_type,
                 )
             except Exception as e:
                 logger.error(e)
@@ -162,4 +172,64 @@ class TicketMessages(HTTPMethodView):
                     },
                     500,
                 )
+
+        # Upload the file and create a message with the file
+        if files:
+            # Check if all files are under a fixed size
+            limit = app.config["MAX_FILE_SIZE"]
+
+            if any(len(file.body) > limit for file in files):
+                return json(
+                    {
+                        "error": "File too large",
+                        "message": f"Files must be less than {limit} bytes.",
+                    },
+                    400,
+                )
+
+            for file in files:
+                file: File
+                # Extract file name and extension
+                _, file_ext = file.name.rsplit(".", 1)
+
+                file_id = await file_executor.add_file(
+                    file_name=file.name,
+                    storage_type=FileStorageType.MINIO,
+                    file_type=file.type,
+                )
+
+                # Get MinIO Client
+                minio_client = app.get_minio_client()
+                inject = app.get_minio_inject()
+
+                # Convert file to an in memory file cause of MinIO client
+                file_body = BytesIO(file.body)
+
+                # Upload file to MinIO
+                try:
+                    _ = await minio_client.put_object(
+                        object_name=f"tickets/{ticket_id}/{file_id}.{file_ext}",
+                        data=file_body,
+                        length=len(file.body),
+                        content_type=file.type,
+                        **inject,
+                    )
+                except Exception as e:
+                    logger.error(e)
+                    await file_executor.delete_file(file_id)
+                    return json(
+                        {
+                            "error": "Internal Server Error",
+                            "message": "An unexpected error occurred while uploading the file.",
+                        },
+                        500,
+                    )
+                # Create message with file
+                await message_executor.create_message_with_file_id(
+                    ticket_id=ticket_id,
+                    user_id=jwt_data.uuid,
+                    file_id=file_id,
+                    message_type=message_type,
+                )
+
         return json({"status": "success"}, 200)

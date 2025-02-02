@@ -1,20 +1,22 @@
+from os import getenv
+
 from dotenv import load_dotenv
 from mayim import Mayim
 from mayim.extension import SanicMayimExtension
 from sanic.log import logger
 from sanic_ext import Extend
-from os import getenv
 
 from api.app import HelpDesk, appserver
 from api.mayim.category_executor import CategoryExecutor
+from api.mayim.file_executor import FileExecutor
 from api.mayim.message_executor import MessageExecutor
 from api.mayim.severity_executor import SeverityExecutor
+from api.mayim.sla_executor import SLAExecutor
+from api.mayim.statistics_executor import StatisticsExecutor
 from api.mayim.system_executor import SystemExecutor
+from api.mayim.team_executor import TeamExecutor
 from api.mayim.ticket_executor import TicketExecutor
 from api.mayim.user_executor import UserExecutor
-from api.mayim.sla_executor import SLAExecutor
-from api.mayim.team_executor import TeamExecutor
-from api.mayim.statistics_executor import StatisticsExecutor
 
 from . import endpoints  # noqa: F401
 
@@ -54,6 +56,7 @@ config.update(
         "MINIO_PASSWORD": getenv("MINIO_PASSWORD", "minio"),
         "MINIO_PUBLIC_ENDPOINT": getenv("MINIO_PUBLIC_ENDPOINT", None),
         "MINIO_BUCKET": getenv("MINIO_BUCKET", "helpdesk"),
+        "MAX_FILE_SIZE": int(getenv("MAX_FILE_SIZE", 10 * 1024 * 1024)),
     }
 )
 
@@ -93,6 +96,7 @@ Extend.register(
             TeamExecutor,
             SeverityExecutor,
             StatisticsExecutor,
+            FileExecutor,
         ],
         dsn=f"postgres://{config['DB_USERNAME']}:{config['DB_PASSWORD']}@{config['DB_HOST']}:{config['DB_PORT']}/{config['DB_NAME']}",  # noqa: E501
     )
