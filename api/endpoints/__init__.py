@@ -27,6 +27,7 @@ from .api.admin.statistics.category import CategoriesCount
 from .api.admin.statistics.subcategory import SubcategoriesCount
 from .api.admin.statistics.resolution_status import ResolutionStatusCount
 from .api.admin.statistics.ticket_status import TicketStatusCount
+from .api.files import Files
 
 appserver.add_route(
     CategoriesManage.as_view(), "/api/admin/categories/<category_id:uuid>/manage"
@@ -63,3 +64,4 @@ appserver.add_route(SeverityRoot.as_view(), "/api/admin/severity")
 appserver.add_route(
     SeverityManage.as_view(), "/api/admin/severity/<severity_id:uuid>/manage"
 )
+appserver.add_route(Files.as_view(), "/api/files/<ticket_id:uuid>/<file_id:uuid>")

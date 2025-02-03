@@ -9,7 +9,7 @@ class FileExecutor(PostgresExecutor):
     generic_prefix = ""
     path = "./queries/files/"
 
-    async def get_file_by_id(self, file_id: UUID) -> File:
+    async def get_file_by_id(self, ticket_id: UUID, file_id: UUID) -> File:
         """Get a File by its ID"""
 
     async def add_file(
