@@ -65,6 +65,8 @@ class TicketStatus(HTTPMethodView):
     ):
         ticket_executor = Mayim.get(TicketExecutor)
         message_executor = Mayim.get(MessageExecutor)
+
+        # Check if the ticket exists
         try:
             ticket = await ticket_executor.get_ticket_by_id(ticket_id)
         except RecordNotFound:
@@ -72,8 +74,10 @@ class TicketStatus(HTTPMethodView):
                 {"error": "Not Found", "message": "The requested ticket was not found"},
                 status=404,
             )
+
+        # Check if the user has permission to update the ticket
         if (
-            ticket.user_id == jwt_data.uuid
+            str(ticket.user_id) == jwt_data.uuid
             or jwt_data.is_support()
             or jwt_data.is_admin()
         ):
