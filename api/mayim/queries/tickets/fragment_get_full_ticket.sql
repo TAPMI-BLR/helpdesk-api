@@ -1,4 +1,5 @@
 SELECT
+    t.sl_no,
     t.id,
     t.title,
     json_build_object(

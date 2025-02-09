@@ -11,6 +11,7 @@ from api.models.enums import TicketResolution, TicketStatus
 
 
 class FullTicket(BaseModel):
+    sl_no: int
     id: UUID
     title: str
     user: User
@@ -25,6 +26,7 @@ class FullTicket(BaseModel):
 
     def to_dict(self):
         return {
+            "sl_no": self.sl_no,
             "id": str(self.id),
             "title": self.title,
             "user": self.user.to_dict(hide_data=True),

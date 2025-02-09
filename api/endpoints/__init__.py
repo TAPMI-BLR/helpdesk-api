@@ -2,15 +2,20 @@ from api.app import appserver
 
 from .api.admin.categories.manage import CategoriesManage
 from .api.admin.categories.root import CategoriesRoot
+from .api.admin.severity.manage import SeverityManage
+from .api.admin.severity.root import SeverityRoot
 from .api.admin.sla.manage import SLAManage
 from .api.admin.sla.root import SLARoot
-from .api.admin.severity.root import SeverityRoot
-from .api.admin.severity.manage import SeverityManage
 from .api.admin.staff import StaffRoot
+from .api.admin.statistics.category import CategoriesCount
+from .api.admin.statistics.resolution_status import ResolutionStatusCount
+from .api.admin.statistics.subcategory import SubcategoriesCount
+from .api.admin.statistics.ticket_status import TicketStatusCount
 from .api.admin.teams.manage import TeamManage
 from .api.admin.teams.root import TeamRoot
 from .api.auth.callback import AuthCallback
 from .api.auth.entra import AuthEntra
+from .api.files import Files
 from .api.me.create import MeCreate
 from .api.me.register import MeRegister
 from .api.me.root import MeRoot
@@ -21,13 +26,9 @@ from .api.options.staff import StaffOptions
 from .api.ping import Ping
 from .api.tickets.info import TicketInfo
 from .api.tickets.messages import TicketMessages
+from .api.tickets.ref import TicketRef
 from .api.tickets.root import TicketRoot
 from .api.tickets.status import TicketStatus
-from .api.admin.statistics.category import CategoriesCount
-from .api.admin.statistics.subcategory import SubcategoriesCount
-from .api.admin.statistics.resolution_status import ResolutionStatusCount
-from .api.admin.statistics.ticket_status import TicketStatusCount
-from .api.files import Files
 
 appserver.add_route(
     CategoriesManage.as_view(), "/api/admin/categories/<category_id:uuid>/manage"
@@ -65,3 +66,4 @@ appserver.add_route(
     SeverityManage.as_view(), "/api/admin/severity/<severity_id:uuid>/manage"
 )
 appserver.add_route(Files.as_view(), "/api/files/<ticket_id:uuid>/<file_id:uuid>")
+appserver.add_route(TicketRef.as_view(), "/api/tickets/ref/<ref_id:int>")

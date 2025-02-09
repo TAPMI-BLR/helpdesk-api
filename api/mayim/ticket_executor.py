@@ -27,6 +27,20 @@ class TicketExecutor(PostgresExecutor):
         query = fragment + id_filter
         return await self.execute(query, model=model, params={"ticket_id": ticket_id})
 
+    async def get_ticket_by_refno(
+        self, ref_id: str, require_full: bool = False
+    ) -> Union[Ticket, FullTicket]:
+        """Get a ticket by its Reference ID (sl_no)"""
+        if require_full:
+            fragment = self.get_query("fragment_get_full_ticket").text
+            model = FullTicket
+        else:
+            fragment = self.get_query("fragment_get_ticket").text
+            model = Ticket
+        id_filter = " WHERE t.sl_no = $ref_id"
+        query = fragment + id_filter
+        return await self.execute(query, model=model, params={"ref_id": ref_id})
+
     async def get_tickets_as_team(
         self,
         limit: int = 10,
