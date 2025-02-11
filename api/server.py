@@ -49,7 +49,7 @@ config.update(
         "AZURE_AD_REDIRECT_URI": getenv(
             "AZURE_AD_REDIRECT_URI", "http://localhost:8000/api/login/callback"
         ),
-        "AZURE_AD_DOMAIN_HINT": getenv("AZURE_AD_DOMAIN_HINT", "manipal.edu"),
+        "AZURE_AD_DOMAIN_HINT": getenv("AZURE_AD_DOMAIN_HINT", "ycn.club"),
         "AZURE_AD_PROMPT": getenv("AZURE_AD_PROMPT", "select_account"),
         "MINIO_ENDPOINT": getenv("MINIO_ENDPOINT", "minio"),
         "MINIO_USERNAME": getenv("MINIO_USERNAME", "minio"),
