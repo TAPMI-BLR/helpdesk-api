@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "helpdesk-api"
-version = "0.1.0"
+version = "1.0.0"
 description = "The Backend API powering the Helpdesk"
 authors = ["Alphaspiderman <68412330+Alphaspiderman@users.noreply.github.com>"]
 readme = "README.md"
