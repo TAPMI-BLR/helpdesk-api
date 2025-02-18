@@ -25,7 +25,7 @@ All core config. values of the HelpDesk system exist as enviroment variables, a 
 
 The database schema for the HelpDesk system can be visualized using the following diagram:
 
-![Database Schema](docs\database-layout.png)
+![Database Schema](docs/database-layout.png)
 
 ## Development
 
